@@ -79,7 +79,7 @@ See [`docs/ROADMAP.md`](docs/ROADMAP.md) for full detail.
 ### V1 Slices
 
 - [x] **Slice 1** — Google News connector → print to terminal
-- [ ] **Slice 2** — Same connector → write to SQLite
+- [x] **Slice 2** — Same connector → write to SQLite
 - [ ] **Slice 3** — Aggregation agent → rank by recency (placeholder weighing)
 - [ ] **Slice 4** — Streamlit page → reads DB, shows ranked list
 - [ ] **Slice 5** — Weighing agent → real preference ranking replaces recency

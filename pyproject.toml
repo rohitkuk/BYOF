@@ -8,3 +8,8 @@ dependencies = [
     "feedparser>=6.0.14",
     "requests>=2.34.2",
 ]
+
+[dependency-groups]
+dev = [
+    "datasette>=0.65.2",
+]
