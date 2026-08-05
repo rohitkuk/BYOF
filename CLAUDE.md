@@ -10,7 +10,7 @@ Primary entrypoint: `app.py` (Python).
 
 ## Current Focus
 
-**Active slice: V1 Slice 1** — Google News connector: fetch → print to terminal (no DB yet).
+**Active slice: V1 Slice 2** — Google News connector → write items to SQLite (no agents yet).
 Full plan: see `docs/ROADMAP.md`. Architecture/flow: see `docs/ARCHITECTURE.md`.
 Do not build ahead of the current slice — flag it if a request seems to skip steps.
 
@@ -29,6 +29,13 @@ Do not build ahead of the current slice — flag it if a request seems to skip s
 - **Multi-agent**: separate agents handle fetching, ranking, and presenting feeds
 - **Connector pattern**: each source type lives in `connectors/`; agents consume connector output
 - **Vertical slices**: build one connector end-to-end before adding the next, rather than building all connectors before any agent logic
+
+## README Maintenance
+
+**Whenever a slice or feature is completed, immediately update `README.md`:**
+- Check the completed item's checkbox in the Progress section (`- [ ]` → `- [x]`)
+- Update the Current Focus section in this file to reflect the next slice
+- Do this in the same commit as the completed work — never let the README lag
 
 ## Hard Rules
 
