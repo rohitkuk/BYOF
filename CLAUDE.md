@@ -10,7 +10,7 @@ Entrypoint: `app.py` (Python).
 
 ## Current Focus
 
-**Active slice: V1 Slice 3** — Aggregation agent → rank by recency (placeholder weighing).
+**Active slice: V1 Slice 4** — Streamlit page → reads DB, shows ranked list.
 Full plan: `docs/ROADMAP.md`. Architecture/flow: `docs/ARCHITECTURE.md`.
 Don't build ahead of current slice — flag if request skips steps.
 
