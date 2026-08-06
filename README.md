@@ -81,7 +81,7 @@ See [`docs/ROADMAP.md`](docs/ROADMAP.md) for full detail.
 - [x] **Slice 1** — Google News connector → print to terminal
 - [x] **Slice 2** — Same connector → write to SQLite
 - [x] **Slice 3** — Aggregation agent → rank by recency (placeholder weighing)
-- [ ] **Slice 4** — Streamlit page → reads DB, shows ranked list
+- [x] **Slice 4** — Streamlit page → reads DB, shows ranked list
 - [ ] **Slice 5** — Weighing agent → real preference ranking replaces recency
 - [ ] **Slice 6** — Metadata filter in Streamlit (source / date / type)
 - [ ] **Slice 7** — TechCrunch connector
