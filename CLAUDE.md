@@ -10,7 +10,7 @@ Entrypoint: `app.py` (Python).
 
 ## Current Focus
 
-**Active slice: V1 Slice 5** — Weighing agent → real preference ranking replaces recency.
+**Active slice: V1 Slice 6** — Metadata filter in Streamlit (source / date / type).
 Full plan: `docs/ROADMAP.md`. Architecture/flow: `docs/ARCHITECTURE.md`.
 Don't build ahead of current slice — flag if request skips steps.
 

@@ -2,10 +2,7 @@ import sqlite3
 from datetime import datetime
 from email.utils import parsedate_to_datetime
 
-SOURCE_WEIGHTS = {
-    "Google News": 1.0,
-}
-_DEFAULT_WEIGHT = 1.0
+from agents.weighing import weigh
 
 
 def _parse_ts(published_at: str, fetched_at: str) -> float:
@@ -18,7 +15,7 @@ def _parse_ts(published_at: str, fetched_at: str) -> float:
             return 0.0
 
 
-def rank(db_path: str) -> list[dict]:
+def rank(db_path: str, prefs_path: str = "preferences.json") -> list[dict]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     rows = conn.execute(
@@ -26,10 +23,11 @@ def rank(db_path: str) -> list[dict]:
     ).fetchall()
     conn.close()
 
-    items = [dict(row) for row in rows]
+    items = weigh([dict(row) for row in rows], prefs_path)
+
     for item in items:
         recency = _parse_ts(item["published_at"], item["fetched_at"])
-        weight = SOURCE_WEIGHTS.get(item["source"], _DEFAULT_WEIGHT)
+        weight = item.pop("_weight", 1.0)
         item["_score"] = recency * weight
 
     items.sort(key=lambda x: x["_score"], reverse=True)
