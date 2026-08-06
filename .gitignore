@@ -64,6 +64,9 @@ db.sqlite3-journal
 # BYOF local database
 db/*.db
 
+# BYOF personal preferences
+preferences.json
+
 # Flask stuff:
 instance/
 .webassets-cache
