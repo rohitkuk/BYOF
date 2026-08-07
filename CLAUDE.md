@@ -14,6 +14,8 @@ Entrypoint: `app.py` (Python).
 Full plan: `docs/ROADMAP.md`. Architecture/flow: `docs/ARCHITECTURE.md`.
 Don't build ahead of current slice — flag if request skips steps.
 
+**Recently completed:** Slice 6b — `streamlit_app.py` full-screen reel feed, FAB drawer, scroll snap, action rail like/dislike/save (CSS-only), BYOF wordmark, relative timestamps, favicons.
+
 ## Directory Structure
 
 | Dir | Purpose |
