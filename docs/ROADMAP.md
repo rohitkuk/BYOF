@@ -19,12 +19,13 @@ Working curated feed from Phase 1 sources, weighted, ranked, filterable.
 - Agents: 1 per connector + 1 weighing + 1 aggregation (~6 total, fixed)
 - Skill: basic single-agent orchestration, prompt design, local DB schema
 - Slices:
-  1. Google News connector → print to terminal
-  2. Same connector → write to SQLite
-  3. Aggregation agent → rank by recency only (fake weighing)
-  4. Streamlit page → reads DB, shows ranked list
-  5. Weighing agent → replace recency with real preference ranking
-  6. Metadata filter in Streamlit
+  1. ✅ Google News connector → print to terminal
+  2. ✅ Same connector → write to SQLite (dedup, `db/store.py`)
+  3. ✅ Aggregation agent → rank by recency only (placeholder weighing)
+  4. ✅ Streamlit page → reads DB, shows ranked list
+  5. ✅ Weighing agent → real preference ranking (category + subcategory scoring)
+  6. ✅ Reel feed UI — snap-scroll cards, article og:images (slug + Playwright fallback),
+        publisher logo fallback, category/date/type filters, 20-item feed cap
   7. Add TechCrunch connector
   8. Add remaining Phase 1 connectors (Papers with Code, Newsletter)
 
@@ -53,4 +54,4 @@ automatically, within a budget.
 
 ## Status
 
-Current slice: **V1 Slice 1** — Google News connector, fetch → print to terminal.
+Current slice: **V1 Slice 7** — TechCrunch connector.
