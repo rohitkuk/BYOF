@@ -6,6 +6,8 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "feedparser>=6.0.14",
+    "gnews[fulltext]>=0.8.2",
+    "playwright>=1.62.0",
     "requests>=2.34.2",
     "streamlit>=1.61.1",
 ]

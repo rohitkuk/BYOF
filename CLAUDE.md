@@ -10,7 +10,7 @@ Entrypoint: `app.py` (Python).
 
 ## Current Focus
 
-**Active slice: V1 Slice 6** — Metadata filter in Streamlit (source / date / type).
+**Active slice: V1 Slice 7** — TechCrunch connector.
 Full plan: `docs/ROADMAP.md`. Architecture/flow: `docs/ARCHITECTURE.md`.
 Don't build ahead of current slice — flag if request skips steps.
 

@@ -15,11 +15,15 @@ def _parse_ts(published_at: str, fetched_at: str) -> float:
             return 0.0
 
 
-def rank(db_path: str, prefs_path: str = "preferences.json") -> list[dict]:
+def rank(db_path: str, prefs_path: str = "preferences.json", limit: int | None = None) -> list[dict]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     rows = conn.execute(
-        "SELECT title, url, source, published_at, fetched_at FROM items"
+        """SELECT title, url, source, published_at, fetched_at,
+                  image_url,
+                  json_extract(raw, '$.summary') as summary,
+                  json_extract(raw, '$.source.href') as source_href
+           FROM items"""
     ).fetchall()
     conn.close()
 
@@ -33,4 +37,6 @@ def rank(db_path: str, prefs_path: str = "preferences.json") -> list[dict]:
     items.sort(key=lambda x: x["_score"], reverse=True)
     for item in items:
         del item["_score"]
+    if limit is not None:
+        items = items[:limit]
     return items
