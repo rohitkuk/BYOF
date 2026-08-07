@@ -26,6 +26,8 @@ Working curated feed from Phase 1 sources, weighted, ranked, filterable.
   5. ✅ Weighing agent → real preference ranking (category + subcategory scoring)
   6. ✅ Reel feed UI — snap-scroll cards, article og:images (slug + Playwright fallback),
         publisher logo fallback, category/date/type filters, 20-item feed cap
+     6b. ✅ Reels UI redesign — full-viewport cards, coral pills, bottom-up gradient,
+         sidebar → inline top bar, compact filter bar, 17px/800 typography
   7. Add TechCrunch connector
   8. Add remaining Phase 1 connectors (Papers with Code, Newsletter)
 

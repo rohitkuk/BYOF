@@ -88,6 +88,7 @@ See [`docs/ROADMAP.md`](docs/ROADMAP.md) for full detail.
 - [x] **Slice 4** — Streamlit feed page reads DB and shows ranked list
 - [x] **Slice 5** — Weighing agent with real preference ranking (category + subcategory scoring)
 - [x] **Slice 6** — Snap-scroll reel cards, article og:images (slug + Playwright fallback), publisher logo fallback, category/date/type filters, 20-item feed cap
+  - [x] **Slice 6b** — Reels UI redesign: full-viewport cards, overlay gradients, coral category pills, sidebar collapsed to inline top bar, compact filter bar, bold typography
 - [ ] **Slice 7** — TechCrunch connector
 - [ ] **Slice 8** — Papers with Code + Newsletter connectors
 
