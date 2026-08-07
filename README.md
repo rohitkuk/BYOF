@@ -83,7 +83,7 @@ See [`docs/ROADMAP.md`](docs/ROADMAP.md) for full detail.
 - [x] **Slice 3** — Aggregation agent → rank by recency (placeholder weighing)
 - [x] **Slice 4** — Streamlit page → reads DB, shows ranked list
 - [x] **Slice 5** — Weighing agent → real preference ranking replaces recency
-- [ ] **Slice 6** — Metadata filter in Streamlit (source / date / type)
+- [x] **Slice 6** — Instagram reel feed, article images, 20-item curation
 - [ ] **Slice 7** — TechCrunch connector
 - [ ] **Slice 8** — Papers with Code + Newsletter connectors
 
