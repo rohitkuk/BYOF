@@ -6,7 +6,7 @@
 
 ## What is this?
 
-BYOF lets you pull content from multiple sources (news, blogs, research papers, social platforms), score it against your preferences, and surface the most relevant items — without sending your reading habits to any server.
+BYOF lets you pull content from multiple sources (news, blogs, research papers, social platforms), score it against your preferences, and surface the most relevant 20 items — without sending your reading habits to any server.
 
 It's also a learning project for progressively complex multi-agent AI architectures. Each version deliberately increases agent orchestration complexity as a first-class goal, independent of source coverage.
 
@@ -19,8 +19,9 @@ It's also a learning project for progressively complex multi-agent AI architectu
 | Language | Python 3.13+ |
 | Package manager | [uv](https://github.com/astral-sh/uv) |
 | RSS parsing | feedparser |
-| Local database | SQLite *(Slice 2+)* |
-| Frontend | Streamlit *(Slice 4+)* |
+| Local database | SQLite |
+| Frontend | Streamlit |
+| Image resolution | requests (slug-based) + Playwright (JS redirect fallback) |
 | Agent orchestration | Custom multi-agent *(V2+)* |
 
 ---
@@ -29,19 +30,22 @@ It's also a learning project for progressively complex multi-agent AI architectu
 
 ```
 Open app
-  → Select connectors
-  → Set preferences
+  → Preference setup (categories + subcategories, saved locally)
 
-┌─────────── privacy boundary — local only from here ───────────┐
-│  Connector agents (Google News, TechCrunch, Papers, etc.)      │
-│    → SQLite (local DB)                                         │
-│    → Weighing agent (rank by preference & history)             │
-│    → Aggregation agent (finalize, dedupe across sources)       │
-│    → Streamlit frontend (filterable by source / date / type)   │
-└───────────────────────────────────────────────────────────────┘
+┌─────────────── privacy boundary — local only from here ───────────────┐
+│  Connector agents (Google News, TechCrunch, etc.)                      │
+│    → SQLite (items + publisher_logos tables)                           │
+│    → Image pipeline: slug fetch → Playwright fallback → logo fallback  │
+│    → Weighing agent (score by category/subcategory preferences)        │
+│    → Aggregation agent (rank by score, cap at 20 items)                │
+│    → Streamlit reel feed (filter by category / date / type)            │
+└───────────────────────────────────────────────────────────────────────┘
 ```
 
-**Key principle:** connectors are stateless and independent. Each exposes a single `fetch() -> list[dict]` function. Agents consume that shape only — nothing reaches into connector internals.
+**Key principles:**
+- Connectors are stateless and independent — each exposes `fetch() -> list[dict]` only
+- Images resolved in two phases: fast concurrent slug construction, then Playwright headless browser for publishers with non-standard URL patterns
+- Feed capped at 20 items (anti-doom-scroll) — ranked by preference score × recency
 
 See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for full design notes.
 
@@ -78,12 +82,12 @@ See [`docs/ROADMAP.md`](docs/ROADMAP.md) for full detail.
 
 ### V1 Slices
 
-- [x] **Slice 1** — Google News connector → print to terminal
-- [x] **Slice 2** — Same connector → write to SQLite
-- [x] **Slice 3** — Aggregation agent → rank by recency (placeholder weighing)
-- [x] **Slice 4** — Streamlit page → reads DB, shows ranked list
-- [x] **Slice 5** — Weighing agent → real preference ranking replaces recency
-- [x] **Slice 6** — Instagram reel feed, article images, 20-item curation
+- [x] **Slice 1** — Google News RSS connector → terminal output
+- [x] **Slice 2** — Persist items to SQLite with dedup (`db/store.py`)
+- [x] **Slice 3** — Aggregation agent ranks by recency (placeholder weighing)
+- [x] **Slice 4** — Streamlit feed page reads DB and shows ranked list
+- [x] **Slice 5** — Weighing agent with real preference ranking (category + subcategory scoring)
+- [x] **Slice 6** — Snap-scroll reel cards, article og:images (slug + Playwright fallback), publisher logo fallback, category/date/type filters, 20-item feed cap
 - [ ] **Slice 7** — TechCrunch connector
 - [ ] **Slice 8** — Papers with Code + Newsletter connectors
 
@@ -106,8 +110,14 @@ See [`docs/ROADMAP.md`](docs/ROADMAP.md) for full detail.
 git clone https://github.com/rohitkuk/BYOF.git
 cd BYOF
 uv sync
-uv run python app.py
+uv run playwright install chromium   # for JS redirect resolution
+uv run python app.py                 # fetch + resolve images (full pipeline)
+uv run streamlit run streamlit_app.py
 ```
+
+On first open, BYOF asks which categories you care about (AI & ML, Technology, Business, etc.) — then shows a ranked, filtered feed of up to 20 items.
+
+Use **Refresh** in the app to pull new articles. For a full image backfill (including Playwright resolution), run `app.py` from the terminal.
 
 ---
 
