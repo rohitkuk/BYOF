@@ -1,7 +1,6 @@
 import feedparser
 
-QUERY = "AI"
-_URL = f"https://news.google.com/rss/search?q={QUERY}&hl=en-US&gl=US&ceid=US:en"
+_URL = "https://techcrunch.com/feed/"
 
 
 def fetch() -> list[dict]:
@@ -11,7 +10,7 @@ def fetch() -> list[dict]:
         items.append({
             "title": entry.get("title", ""),
             "url": entry.get("link", ""),
-            "source": "Google News",
+            "source": entry.get("source", {}).get("title", "TechCrunch"),
             "published_at": entry.get("published", ""),
             "raw": dict(entry),
         })

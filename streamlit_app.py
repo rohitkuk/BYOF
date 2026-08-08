@@ -8,7 +8,8 @@ import streamlit as st
 
 from agents.aggregation import rank
 from agents.weighing import CATEGORIES, load_prefs, save_prefs
-from connectors.google_news import fetch
+from connectors.google_news import fetch as fetch_google_news
+from connectors.techcrunch import fetch as fetch_techcrunch
 from db.store import init_db, refresh_article_images, refresh_publisher_logos, save_items
 
 DB_PATH = "db/byof.db"
@@ -17,6 +18,7 @@ FEED_LIMIT = 20
 
 _SOURCE_TYPE = {
     "Google News": "Article",
+    "TechCrunch": "Article",
 }
 _DEFAULT_TYPE = "Article"
 
@@ -242,7 +244,7 @@ def _parse_dt(published_at: str) -> datetime | None:
         return None
 
 
-def _apply_filters(items, sel_cats, sel_subcats, date_filter, sel_types):
+def _apply_filters(items, sel_cats, sel_subcats, date_filter, sel_types, sel_sources):
     cutoff = _cutoff(date_filter)
     out = []
     for item in items:
@@ -251,6 +253,8 @@ def _apply_filters(items, sel_cats, sel_subcats, date_filter, sel_types):
         if sel_subcats and not (_item_subcategories(item) & set(sel_subcats)):
             continue
         if _content_type(item["source"]) not in sel_types:
+            continue
+        if sel_sources and item.get("source") not in sel_sources:
             continue
         if cutoff:
             dt = _parse_dt(item.get("published_at", ""))
@@ -391,6 +395,7 @@ interests_str = " · ".join(prefs["categories"])
 ranked = rank(DB_PATH, PREFS_PATH, limit=FEED_LIMIT)
 all_cats = list(CATEGORIES.keys())
 all_types = sorted({_content_type(item["source"]) for item in ranked}) if ranked else ["Article"]
+all_sources = ["Google News", "TechCrunch"]
 
 with st.sidebar:
     st.markdown(
@@ -406,6 +411,7 @@ with st.sidebar:
     sel_cats = st.multiselect("Category", all_cats, default=[], placeholder="All categories")
     date_filter = st.selectbox("Date", ["All", "Today", "Last 7 days", "Last 30 days"])
     sel_types = st.multiselect("Type", all_types, default=all_types)
+    sel_sources = st.multiselect("Source", all_sources, default=all_sources)
     sel_subcats = []
     if sel_cats:
         avail_subcats = []
@@ -416,7 +422,7 @@ with st.sidebar:
     if st.button("↻ Refresh", key="refresh_btn", use_container_width=True):
         with st.spinner("Fetching..."):
             conn = init_db(DB_PATH)
-            new_items = save_items(conn, fetch())
+            new_items = save_items(conn, fetch_google_news() + fetch_techcrunch())
             refresh_article_images(conn)
             refresh_publisher_logos(conn)
             conn.close()
@@ -426,7 +432,7 @@ with st.sidebar:
 if not ranked:
     st.info("No items yet. Run `uv run python app.py` to fetch.")
 else:
-    filtered = _apply_filters(ranked, sel_cats, sel_subcats, date_filter, sel_types)
+    filtered = _apply_filters(ranked, sel_cats, sel_subcats, date_filter, sel_types, sel_sources)
     if filtered:
         ordered = _sort_images_first(filtered)
         st.markdown('<div class="byof-topbar"><span class="byof-topbar-logo">BYOF</span></div>', unsafe_allow_html=True)
