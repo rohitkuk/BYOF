@@ -1,5 +1,6 @@
 from agents.aggregation import rank
-from connectors.google_news import fetch
+from connectors.google_news import fetch as fetch_google_news
+from connectors.techcrunch import fetch as fetch_techcrunch
 from db.store import init_db, refresh_article_images, refresh_publisher_logos, save_items
 
 DB_PATH = "db/byof.db"
@@ -8,7 +9,7 @@ if __name__ == "__main__":
     conn = init_db(DB_PATH)
 
     print("Fetching articles...")
-    items = fetch()
+    items = fetch_google_news() + fetch_techcrunch()
     saved = save_items(conn, items)
     print(f"Saved {saved} new item(s) to {DB_PATH}")
 
