@@ -28,7 +28,7 @@ Working curated feed from Phase 1 sources, weighted, ranked, filterable.
         publisher logo fallback, category/date/type filters, 20-item feed cap
      6b. ✅ Reel UI redesign — FAB drawer, scroll snap, action rail, like/skip/save session state
      6c. ⬜ Frontend migration — Streamlit → FastAPI + React
-           (see `docs/FRONTEND.md`, 7 steps)
+           Glacier design system. See `docs/DESIGN.md`.
   7. ✅ Add TechCrunch connector
   8. ✅ Add remaining Phase 1 connectors (Papers with Code, The Rundown AI newsletter)
 
@@ -57,4 +57,4 @@ automatically, within a budget.
 
 ## Status
 
-Current slice: **Slice 6c** — frontend migration in progress. See `docs/FRONTEND.md`.
+Current slice: **Slice 6c** — frontend migration in progress. See `docs/DESIGN.md`.

@@ -102,13 +102,13 @@ Open app
 
 ## Planned: Frontend migration
 
-Streamlit is being replaced with FastAPI + React (Vite).
-See `docs/FRONTEND.md` for the full stepwise plan.
+Streamlit → FastAPI + React (Vite). See `docs/DESIGN.md` Steps 1-7.
 
-Target architecture:
-- `api.py` (FastAPI, :8000) — Python bridge between React and agents/db
-- `frontend/` (React Vite, :5173) — full reel UI matching Stitch design
+Target:
+- `api.py` (FastAPI :8000) — Python bridge to agents/db
+- `frontend/` (React Vite :5173) — Glacier design system UI
 - `connectors/`, `agents/`, `db/`, `app.py` — unchanged
 
-CORS: FastAPI allows localhost:5173 only.
-Privacy boundary unchanged — both processes run locally.
+Design system: Glacier Modern Editorial (`docs/DESIGN.md`)
+Fonts: Playfair Display + Hanken Grotesk
+Privacy boundary unchanged — both processes local only.

@@ -22,7 +22,7 @@ It's also a learning project for progressively complex multi-agent AI architectu
 | Local database | SQLite |
 | Frontend | Streamlit *(being replaced — see Slice 6c)* |
 | FastAPI | API layer *(planned — migration Step 1)* |
-| React (Vite) | Frontend SPA *(planned — migration Step 2+)* |
+| React (Vite) | Frontend SPA *(migration Steps 2-6)* |
 | Image resolution | requests (slug-based) + Playwright (JS redirect fallback) |
 | Agent orchestration | Custom multi-agent *(V2+)* |
 

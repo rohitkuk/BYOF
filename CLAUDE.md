@@ -10,9 +10,8 @@ Entrypoint: `app.py` (Python).
 
 ## Current Focus
 
-**Active: Frontend migration — Streamlit → FastAPI + React.**
-Prompts in `docs/FRONTEND.md`. Run Step 1 next session.
-Do not start Slice 7 (TechCrunch) until migration is complete.
+**Active: V1 Slice 7 — TechCrunch connector.**
+Before starting: complete frontend migration Steps 1-7 in `docs/DESIGN.md`.
 
 Full plan: `docs/ROADMAP.md`. Architecture/flow: `docs/ARCHITECTURE.md`.
 Don't build ahead of current slice — flag if request skips steps.
@@ -26,9 +25,10 @@ Don't build ahead of current slice — flag if request skips steps.
 | `agents/` | Multi-agent logic (weighing, aggregation, etc.) |
 | `connectors/` | Source integrations (RSS, APIs, etc.) |
 | `db/` | Local storage layer |
+| `design/` | Stitch reference screens + screenshots (read-only) |
 | `docs/` | Architecture and roadmap docs |
-| `frontend/` | React (Vite) SPA — not built yet |
-| `api.py` | FastAPI server — not built yet |
+| `frontend/` | React (Vite) SPA — stubs exist, built in migration steps |
+| `api.py` | FastAPI server — stub exists, built in Step 1 |
 
 ## Architecture Principles
 
@@ -51,6 +51,9 @@ Don't build ahead of current slice — flag if request skips steps.
 - No data leaves device. No cloud DB, no telemetry, no analytics, no external persistence — only outbound calls allowed: fetches *from* source APIs/RSS.
 - No new connector without following Connector Contract below.
 - Never edit `requirements.txt` or manually manage `venv/` — use `uv add`/`uv remove`, let `uv.lock` track versions.
+- Design system: Glacier palette only — see `docs/DESIGN.md`. Never introduce a colour not in that file.
+- Fonts: Playfair Display (headlines/wordmark) + Hanken Grotesk (everything else) — no other fonts.
+- UI reference: always read `design/screens/{screen}.html` before building any component.
 
 ## Connector Contract
 
@@ -80,7 +83,9 @@ _(test/lint commands: add once they exist)_
 
 ## Current State
 
-- `docs/FRONTEND.md` ✅ — stepwise migration prompts, 7 steps, Step 1 is next
-- `streamlit_app.py` ⚠️  — active now, will be deleted after migration Step 7
-- `api.py` ⬜ — stub only, build in Step 1
-- `frontend/src/` ⬜ — stubs only (App.jsx, FeedCard, ActionRail, ProgressDots, Sidebar, FilterPills, useFeed, usePreferences, index.css), build Steps 2–6
+- `docs/DESIGN.md` ✅ — Glacier design system + migration steps 1-7
+- `design/screens/` ✅ — 5 Stitch HTML reference screens
+- `design/screenshots/` ✅ — 5 reference PNGs
+- `streamlit_app.py` ⚠️  — active now, deleted in migration Step 7
+- `api.py` ⬜ — stub only, built in migration Step 1
+- `frontend/` ⬜ — stubs only, built in migration Steps 2-6
