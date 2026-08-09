@@ -99,3 +99,16 @@ Open app
 - No auth, no multi-user support — single local user only.
 - No hosting/deployment — runs on developer's own machine.
 - No real-time sync across devices.
+
+## Planned: Frontend migration
+
+Streamlit → FastAPI + React (Vite). See `docs/DESIGN.md` Steps 1-7.
+
+Target:
+- `api.py` (FastAPI :8000) — Python bridge to agents/db
+- `frontend/` (React Vite :5173) — Glacier design system UI
+- `connectors/`, `agents/`, `db/`, `app.py` — unchanged
+
+Design system: Glacier Modern Editorial (`docs/DESIGN.md`)
+Fonts: Playfair Display + Hanken Grotesk
+Privacy boundary unchanged — both processes local only.
