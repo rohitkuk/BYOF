@@ -87,5 +87,5 @@ _(test/lint commands: add once they exist)_
 - `design/screens/` ✅ — 5 Stitch HTML reference screens
 - `design/screenshots/` ✅ — 5 reference PNGs
 - `streamlit_app.py` ⚠️  — active now, deleted in migration Step 7
-- `api.py` ⬜ — stub only, built in migration Step 1
+- `api.py` ✅ — FastAPI backend complete (Step 1 done)
 - `frontend/` ⬜ — stubs only, built in migration Steps 2-6

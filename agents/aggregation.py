@@ -22,7 +22,7 @@ def rank(db_path: str, prefs_path: str = "preferences.json", limit: int | None =
     conn.row_factory = sqlite3.Row
     rows = conn.execute(
         """SELECT title, url, source, published_at, fetched_at,
-                  image_url,
+                  image_url, image_type,
                   json_extract(raw, '$.summary') as summary,
                   json_extract(raw, '$.source.href') as source_href
            FROM items"""
@@ -38,7 +38,7 @@ def rank(db_path: str, prefs_path: str = "preferences.json", limit: int | None =
 
     items.sort(key=lambda x: x["_score"], reverse=True)
     for item in items:
-        del item["_score"]
+        item["score"] = item.pop("_score")
     if limit is not None:
         items = items[:limit]
     return items
