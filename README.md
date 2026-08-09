@@ -59,7 +59,7 @@ Two independent tracks — advance either without coupling to the other.
 
 | Phase | Sources | Status |
 |---|---|---|
-| 1 | Google News, TechCrunch, Papers with Code, Newsletter | 🔄 In progress |
+| 1 | Google News, TechCrunch, Papers with Code, The Rundown AI | ✅ Complete |
 | 2 | Instagram + LinkedIn (via browser session) | ⏳ Planned |
 | 3 | Instagram Reels | ⏳ Planned |
 | 4 | YouTube | ⏳ Planned |
@@ -89,15 +89,15 @@ See [`docs/ROADMAP.md`](docs/ROADMAP.md) for full detail.
 - [x] **Slice 5** — Weighing agent with real preference ranking (category + subcategory scoring)
 - [x] **Slice 6** — Snap-scroll reel cards, article og:images (slug + Playwright fallback), publisher logo fallback, category/date/type filters, 20-item feed cap
   - [x] **Slice 6b** — Reels UI redesign: full-viewport cards, overlay gradients, coral category pills, sidebar collapsed to inline top bar, compact filter bar, bold typography
-- [ ] **Slice 7** — TechCrunch connector
-- [ ] **Slice 8** — Papers with Code + Newsletter connectors
+- [x] **Slice 7** — TechCrunch connector
+- [x] **Slice 8** — Papers with Code + The Rundown AI connectors
 
 ### Sources
 
 - [x] Google News (RSS)
-- [ ] TechCrunch
-- [ ] Papers with Code
-- [ ] Newsletter
+- [x] TechCrunch
+- [x] Papers with Code
+- [x] The Rundown AI (newsletter)
 - [ ] Instagram / LinkedIn *(Phase 2)*
 - [ ] YouTube *(Phase 4)*
 

@@ -6,13 +6,15 @@ from agents.weighing import weigh
 
 
 def _parse_ts(published_at: str, fetched_at: str) -> float:
-    try:
-        return parsedate_to_datetime(published_at).timestamp()
-    except Exception:
+    for parse in (parsedate_to_datetime, datetime.fromisoformat):
         try:
-            return datetime.fromisoformat(fetched_at).timestamp()
+            return parse(published_at).timestamp()
         except Exception:
-            return 0.0
+            continue
+    try:
+        return datetime.fromisoformat(fetched_at).timestamp()
+    except Exception:
+        return 0.0
 
 
 def rank(db_path: str, prefs_path: str = "preferences.json", limit: int | None = None) -> list[dict]:

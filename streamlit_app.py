@@ -8,17 +8,32 @@ import streamlit as st
 
 from agents.aggregation import rank
 from agents.weighing import CATEGORIES, load_prefs, save_prefs
+from connectors.arxiv import fetch as fetch_arxiv
 from connectors.google_news import fetch as fetch_google_news
+from connectors.mit_tech_review import fetch as fetch_mit
 from connectors.techcrunch import fetch as fetch_techcrunch
+from connectors.tldr_tech import fetch as fetch_tldr
 from db.store import init_db, refresh_article_images, refresh_publisher_logos, save_items
 
 DB_PATH = "db/byof.db"
 PREFS_PATH = "preferences.json"
-FEED_LIMIT = 20
+FEED_LIMIT = 50
+_SOURCE_LIMIT = 12
+
+
+def _fetch_all() -> list[dict]:
+    sources = [fetch_google_news, fetch_techcrunch, fetch_arxiv, fetch_mit, fetch_tldr]
+    items = []
+    for fn in sources:
+        items.extend(fn()[:_SOURCE_LIMIT])
+    return items
 
 _SOURCE_TYPE = {
     "Google News": "Article",
     "TechCrunch": "Article",
+    "ArXiv": "Paper",
+    "MIT Technology Review": "Article",
+    "TLDR Tech": "Newsletter",
 }
 _DEFAULT_TYPE = "Article"
 
@@ -34,11 +49,11 @@ _CAT_COLORS = {
 }
 _DEFAULT_COLOR = (100, 116, 139)
 
-_BG      = "#0e0e0e"
-_CARD_BG = "#1a1a1a"
+_BG      = "#f5f5f5"
+_CARD_BG = "#ffffff"
 _ACCENT  = "#e85d4a"
-_TEXT    = "#f0f0f0"
-_MUTED   = "#888"
+_TEXT    = "#111111"
+_MUTED   = "#666"
 
 
 def _content_type(source: str) -> str:
@@ -88,9 +103,20 @@ def _is_meaningful_summary(summary: str, title: str) -> bool:
     return s not in t and t not in s
 
 
+def _parse_published(published_at: str) -> datetime | None:
+    for parse in (parsedate_to_datetime, datetime.fromisoformat):
+        try:
+            return parse(published_at)
+        except Exception:
+            continue
+    return None
+
+
 def _relative_time(published_at: str) -> str:
     try:
-        dt = parsedate_to_datetime(published_at)
+        dt = _parse_published(published_at)
+        if dt is None:
+            raise ValueError
         now = datetime.now(timezone.utc)
         seconds = (now - dt).total_seconds()
         if seconds < 3600:
@@ -170,11 +196,13 @@ def _render_reel_feed(items: list[dict]) -> str:
         if img_url:
             media_box = (
                 f'<div style="aspect-ratio:16/9;width:100%;overflow:hidden;position:relative;flex-shrink:0">'
+                f'<a href="{_esc(item["url"])}" target="_blank" style="display:block;width:100%;height:100%">'
                 f'<img src="{_esc(img_url)}" style="width:100%;height:100%;object-fit:cover;display:block">'
+                f'</a>'
                 f'<div class="dislike-overlay" style="position:absolute;inset:0;'
                 f'background:rgba(0,0,0,0.4);opacity:0;pointer-events:none;'
                 f'transition:opacity 200ms;z-index:2"></div>'
-                f'<div style="position:absolute;inset:0;'
+                f'<div style="position:absolute;inset:0;pointer-events:none;'
                 f'background:linear-gradient(to top,rgba(0,0,0,0.6) 0%,transparent 50%)">'
                 f'<span style="position:absolute;bottom:10px;left:12px;'
                 f'background:{_ACCENT};color:white;padding:3px 10px;border-radius:20px;'
@@ -205,7 +233,7 @@ def _render_reel_feed(items: list[dict]) -> str:
             f'flex-direction:column;justify-content:center;padding:56px 8px 8px">'
             f'<div class="card-wrapper" style="position:relative;width:100%;'
             f'border-radius:12px;overflow:hidden;'
-            f'box-shadow:0 4px 24px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.06)">'
+            f'box-shadow:0 2px 12px rgba(0,0,0,0.1),0 0 0 1px rgba(0,0,0,0.07)">'
             f'{checkboxes}'
             f'{media_box}'
             f'<div style="background:{_CARD_BG};padding:14px 16px 16px">'
@@ -223,7 +251,7 @@ def _render_reel_feed(items: list[dict]) -> str:
         f'<div style="position:fixed;top:0;left:50%;transform:translateX(-50%);'
         f'width:100%;max-width:680px;bottom:0;z-index:1;'
         f'overflow-y:scroll;scroll-snap-type:y mandatory;'
-        f'background:{_BG};font-family:-apple-system,system-ui,sans-serif">'
+        f'background:#f5f5f5;font-family:-apple-system,system-ui,sans-serif">'
         f'{cards}'
         f'</div>'
     )
@@ -238,10 +266,7 @@ def _cutoff(date_filter: str) -> datetime | None:
 
 
 def _parse_dt(published_at: str) -> datetime | None:
-    try:
-        return parsedate_to_datetime(published_at)
-    except Exception:
-        return None
+    return _parse_published(published_at)
 
 
 def _apply_filters(items, sel_cats, sel_subcats, date_filter, sel_types, sel_sources):
@@ -278,15 +303,15 @@ footer                          { display: none !important; }
 }
 [data-testid="stMain"] { overflow: hidden !important; }
 
-[data-testid="stSidebar"] { background-color: #111 !important; }
+[data-testid="stApp"] { background: #f5f5f5 !important; }
+[data-testid="stSidebar"] { background-color: #efefef !important; }
 [data-testid="stSidebarContent"] { padding: 1.5rem 1rem !important; }
-
 
 .action-btn {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: rgba(0,0,0,0.45);
+    background: rgba(0,0,0,0.38);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     display: flex;
@@ -300,16 +325,23 @@ footer                          { display: none !important; }
     -webkit-user-select: none;
     line-height: 1;
 }
-.action-btn:hover {
-    background: rgba(255,255,255,0.15);
-    transform: scale(1.1);
+.action-btn:hover { background: rgba(0,0,0,0.55); transform: scale(1.1); }
+
+.card-wrapper:has(.like-toggle:checked) .like-btn {
+    color: #e85d4a !important;
+    background: rgba(232,93,74,0.3) !important;
+    transform: scale(1.15);
 }
-.card-wrapper:has(.like-toggle:checked) .like-btn    { color: #e85d4a !important; }
-.card-wrapper:has(.dislike-toggle:checked) .dislike-btn { color: #888 !important; }
-.card-wrapper:has(.save-toggle:checked) .save-btn    { color: #f0c040 !important; }
-.card-wrapper:has(.dislike-toggle:checked) .dislike-overlay {
-    opacity: 1 !important;
+.card-wrapper:has(.dislike-toggle:checked) .dislike-btn {
+    color: #ccc !important;
+    background: rgba(0,0,0,0.55) !important;
 }
+.card-wrapper:has(.save-toggle:checked) .save-btn {
+    color: #f0c040 !important;
+    background: rgba(240,192,64,0.3) !important;
+    transform: scale(1.15);
+}
+.card-wrapper:has(.dislike-toggle:checked) .dislike-overlay { opacity: 1 !important; }
 
 .byof-topbar {
     position: fixed;
@@ -321,10 +353,11 @@ footer                          { display: none !important; }
     z-index: 100;
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     padding: 14px 16px;
     pointer-events: none;
     font-family: -apple-system, system-ui, sans-serif;
-    background: linear-gradient(to bottom, #0e0e0e 70%, transparent);
+    background: linear-gradient(to bottom, #f5f5f5 70%, transparent);
 }
 .byof-topbar-logo {
     font-size: 14px;
@@ -342,17 +375,16 @@ st.html("""<script>
   var btn = doc.createElement('button');
   btn.id = 'byof-sidebar-fab';
   btn.innerHTML = '&#9776;';
-  btn.style.cssText = 'position:fixed;top:10px;right:16px;width:40px;height:40px;' +
+  btn.style.cssText = 'position:fixed;top:10px;left:16px;width:40px;height:40px;' +
     'border-radius:50%;background:#e85d4a;color:white;border:none;' +
-    'box-shadow:0 2px 8px rgba(0,0,0,0.4);z-index:99999;' +
+    'box-shadow:0 2px 8px rgba(0,0,0,0.25);z-index:99999;' +
     'display:flex;align-items:center;justify-content:center;' +
     'cursor:pointer;font-size:18px;line-height:1;' +
     'font-family:-apple-system,system-ui,sans-serif;';
   btn.addEventListener('click', function() {
-    var toggle = doc.querySelector('[data-testid="stExpandSidebarButton"]') ||
-                 doc.querySelector('[data-testid="stSidebarCollapseButton"]') ||
-                 doc.querySelector('[data-testid="collapsedControl"]');
-    if (toggle) toggle.click();
+    var el = doc.querySelector('[data-testid="stSidebar"] [data-testid="stBaseButton-headerNoPadding"]') ||
+             doc.querySelector('[data-testid="stExpandSidebarButton"]');
+    if (el) el.click();
   });
   doc.body.appendChild(btn);
 })();
@@ -395,7 +427,7 @@ interests_str = " · ".join(prefs["categories"])
 ranked = rank(DB_PATH, PREFS_PATH, limit=FEED_LIMIT)
 all_cats = list(CATEGORIES.keys())
 all_types = sorted({_content_type(item["source"]) for item in ranked}) if ranked else ["Article"]
-all_sources = ["Google News", "TechCrunch"]
+all_sources = ["Google News", "TechCrunch", "ArXiv", "MIT Technology Review", "TLDR Tech"]
 
 with st.sidebar:
     st.markdown(
@@ -422,7 +454,7 @@ with st.sidebar:
     if st.button("↻ Refresh", key="refresh_btn", use_container_width=True):
         with st.spinner("Fetching..."):
             conn = init_db(DB_PATH)
-            new_items = save_items(conn, fetch_google_news() + fetch_techcrunch())
+            new_items = save_items(conn, _fetch_all())
             refresh_article_images(conn)
             refresh_publisher_logos(conn)
             conn.close()

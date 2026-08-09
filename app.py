@@ -1,15 +1,28 @@
 from agents.aggregation import rank
+from connectors.arxiv import fetch as fetch_arxiv
 from connectors.google_news import fetch as fetch_google_news
+from connectors.mit_tech_review import fetch as fetch_mit
 from connectors.techcrunch import fetch as fetch_techcrunch
+from connectors.tldr_tech import fetch as fetch_tldr
 from db.store import init_db, refresh_article_images, refresh_publisher_logos, save_items
 
 DB_PATH = "db/byof.db"
+_SOURCE_LIMIT = 12
+
+
+def _fetch_all() -> list[dict]:
+    sources = [fetch_google_news, fetch_techcrunch, fetch_arxiv, fetch_mit, fetch_tldr]
+    items = []
+    for fn in sources:
+        items.extend(fn()[:_SOURCE_LIMIT])
+    return items
+
 
 if __name__ == "__main__":
     conn = init_db(DB_PATH)
 
     print("Fetching articles...")
-    items = fetch_google_news() + fetch_techcrunch()
+    items = _fetch_all()
     saved = save_items(conn, items)
     print(f"Saved {saved} new item(s) to {DB_PATH}")
 
