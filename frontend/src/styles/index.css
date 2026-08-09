@@ -1,1 +1,65 @@
-/* CSS variables and global styles — see docs/FRONTEND.md Step 2 */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Hanken+Grotesk:wght@400;600&display=swap');
+
+:root {
+  /* Surfaces */
+  --bg:                     #101415;
+  --surface-lowest:         #0b0f10;
+  --surface-low:            #191c1e;
+  --surface:                #1d2022;
+  --surface-high:           #272a2c;
+  --surface-highest:        #323537;
+
+  /* Accents */
+  --primary:                #bfc5e4;
+  --secondary:              #93cfeb;
+  --tertiary:               #69d4f4;
+  --on-secondary:           #003546;
+
+  /* Text */
+  --text-primary:           #e0e3e5;
+  --text-muted:             #c6c6ce;
+  --text-dim:               #909098;
+
+  /* Borders */
+  --outline:                #909098;
+  --outline-variant:        #46464d;
+
+  /* Action states */
+  --like-active:            #93cfeb;
+  --save-active:            #69d4f4;
+  --skip-active:            #46464d;
+
+  /* Radius */
+  --radius-sm:              0.5rem;
+  --radius:                 1rem;
+  --radius-md:              1.5rem;
+  --radius-lg:              2rem;
+  --radius-xl:              3rem;
+  --radius-full:            9999px;
+
+  /* Spacing */
+  --unit:                   8px;
+  --container-padding:      24px;
+  --gutter:                 16px;
+
+  /* Components */
+  --action-btn-bg:          rgba(255,255,255,0.10);
+  --sidebar-bg:             #0b0f10;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow: hidden;
+}
+
+h1, h2, h3, h4, .headline, .wordmark {
+  font-family: 'Playfair Display', Georgia, serif;
+}
