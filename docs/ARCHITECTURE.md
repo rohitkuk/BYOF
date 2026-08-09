@@ -99,3 +99,16 @@ Open app
 - No auth, no multi-user support — single local user only.
 - No hosting/deployment — runs on developer's own machine.
 - No real-time sync across devices.
+
+## Planned: Frontend migration
+
+Streamlit is being replaced with FastAPI + React (Vite).
+See `docs/FRONTEND.md` for the full stepwise plan.
+
+Target architecture:
+- `api.py` (FastAPI, :8000) — Python bridge between React and agents/db
+- `frontend/` (React Vite, :5173) — full reel UI matching Stitch design
+- `connectors/`, `agents/`, `db/`, `app.py` — unchanged
+
+CORS: FastAPI allows localhost:5173 only.
+Privacy boundary unchanged — both processes run locally.

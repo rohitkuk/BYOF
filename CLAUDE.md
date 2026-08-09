@@ -10,7 +10,10 @@ Entrypoint: `app.py` (Python).
 
 ## Current Focus
 
-**Active slice: V1 Slice 8 complete — V1 Phase 1 sources done.** Next: V2 planning.
+**Active: Frontend migration — Streamlit → FastAPI + React.**
+Prompts in `docs/FRONTEND.md`. Run Step 1 next session.
+Do not start Slice 7 (TechCrunch) until migration is complete.
+
 Full plan: `docs/ROADMAP.md`. Architecture/flow: `docs/ARCHITECTURE.md`.
 Don't build ahead of current slice — flag if request skips steps.
 
@@ -24,6 +27,8 @@ Don't build ahead of current slice — flag if request skips steps.
 | `connectors/` | Source integrations (RSS, APIs, etc.) |
 | `db/` | Local storage layer |
 | `docs/` | Architecture and roadmap docs |
+| `frontend/` | React (Vite) SPA — not built yet |
+| `api.py` | FastAPI server — not built yet |
 
 ## Architecture Principles
 
@@ -67,4 +72,15 @@ Agents in `agents/` consume this shape only — never reach into connector inter
 - Add dependency: `uv add <package>`
 - Run: `uv run python app.py`
 
+Planned (post-migration):
+- Backend:  `uv run python api.py`       → http://localhost:8000
+- Frontend: `cd frontend && npm run dev` → http://localhost:5173
+
 _(test/lint commands: add once they exist)_
+
+## Current State
+
+- `docs/FRONTEND.md` ✅ — stepwise migration prompts, 7 steps, Step 1 is next
+- `streamlit_app.py` ⚠️  — active now, will be deleted after migration Step 7
+- `api.py` ⬜ — stub only, build in Step 1
+- `frontend/src/` ⬜ — stubs only (App.jsx, FeedCard, ActionRail, ProgressDots, Sidebar, FilterPills, useFeed, usePreferences, index.css), build Steps 2–6

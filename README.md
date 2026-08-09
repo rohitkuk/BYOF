@@ -20,7 +20,9 @@ It's also a learning project for progressively complex multi-agent AI architectu
 | Package manager | [uv](https://github.com/astral-sh/uv) |
 | RSS parsing | feedparser |
 | Local database | SQLite |
-| Frontend | Streamlit |
+| Frontend | Streamlit *(being replaced — see Slice 6c)* |
+| FastAPI | API layer *(planned — migration Step 1)* |
+| React (Vite) | Frontend SPA *(planned — migration Step 2+)* |
 | Image resolution | requests (slug-based) + Playwright (JS redirect fallback) |
 | Agent orchestration | Custom multi-agent *(V2+)* |
 
@@ -88,7 +90,8 @@ See [`docs/ROADMAP.md`](docs/ROADMAP.md) for full detail.
 - [x] **Slice 4** — Streamlit feed page reads DB and shows ranked list
 - [x] **Slice 5** — Weighing agent with real preference ranking (category + subcategory scoring)
 - [x] **Slice 6** — Snap-scroll reel cards, article og:images (slug + Playwright fallback), publisher logo fallback, category/date/type filters, 20-item feed cap
-  - [x] **Slice 6b** — Reels UI redesign: full-viewport cards, overlay gradients, coral category pills, sidebar collapsed to inline top bar, compact filter bar, bold typography
+- [x] **Slice 6b** — UI redesign (FAB drawer, action rail, like/skip/save)
+- [ ] **Slice 6c** — Frontend migration: Streamlit → FastAPI + React
 - [x] **Slice 7** — TechCrunch connector
 - [x] **Slice 8** — Papers with Code + The Rundown AI connectors
 
