@@ -3,12 +3,14 @@ import { useFeed } from './hooks/useFeed'
 import { FeedCard } from './components/FeedCard'
 import { ActionRail } from './components/ActionRail'
 import { ProgressDots } from './components/ProgressDots'
+import { Sidebar } from './components/Sidebar'
 
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
   const [signals, setSignals] = useState({})
-  const { items, loading, error } = useFeed()
+  const [filters, setFilters] = useState({})
+  const { items, loading, error } = useFeed(filters)
   const cardRefs = useRef([])
 
   useEffect(() => {
@@ -54,6 +56,15 @@ export default function App() {
 
   return (
     <>
+      {/* Sidebar */}
+      <Sidebar
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        items={items}
+        filters={filters}
+        onApply={setFilters}
+      />
+
       {/* Fixed top bar */}
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, pointerEvents: 'none' }}>
         <button style={fabStyle} onClick={() => setSidebarOpen(o => !o)}>☰</button>
