@@ -57,12 +57,19 @@ Accepts optional `limit` parameter — V1 caps feed at 20 items (anti-doom-scrol
 **Frontend** (`frontend/` — React Vite, port 5173)
 - Glacier Modern Editorial design system (`docs/DESIGN.md`)
 - Fonts: Playfair Display (headlines/wordmark) + Hanken Grotesk (everything else)
-- `FeedCard`: full-viewport scroll-snap cards, article image, gradient overlay, category pills,
-  title, source meta, READ link
-- `ActionRail`: fixed right-side LIKE / SKIP / SAVE buttons with active-state colours
-- `ProgressDots`: fixed left-edge scroll indicator
-- `Sidebar` + `FilterPills`: slide-in drawer with category/date/type/source filters;
-  Apply re-fetches `/feed` with query params
+- View state routing: `useState('feed')` in `App.jsx` — no React Router
+- Auth gate: `localStorage.getItem('byof_signed_in')` → show `LandingPage` or app shell
+- Components:
+  - `LandingPage`: full-viewport landing, ambient bg image (opacity 0.30 overlay), gradient,
+    "Your world, curated." heading, "Sign in with Google" pill (bypasses OAuth via localStorage)
+  - `TopBar`: fixed 64px header — mobile: hamburger/wordmark/avatar; desktop: hamburger/wordmark + nav links (For You/Explore/Saved/Profile) + avatar
+  - `BottomNav`: mobile-only fixed bottom nav, 4 tabs, active pill + dot indicator, frosted glass
+  - `FeedCard`: full-viewport scroll-snap cards, article image, gradient overlay, category pills, title, source meta, READ link
+  - `ActionRail`: fixed right-side LIKE / SKIP / SAVE buttons, per-item signals, active-state colours
+  - `ProgressDots`: desktop-only fixed right-edge scroll indicator
+  - `ExplorePage`: content format segmented control (All/Articles/Newsletters/Papers), topic bento pills (multi-select), source list with color-coded initials + checkbox; Apply navigates back to feed with filters
+  - `SavedPage`: search bar, type filter pills, saved item cards (from `signals[url].saved`), empty state
+  - `ProfilePage`: avatar, stats row (articles read/saved/liked), preferences pills, app info rows
 
 **CLI fetch script** (`app.py`)
 Offline fetch pipeline: `fetch()` → `save_items()` → `refresh_article_images(use_playwright=True)`
@@ -105,12 +112,10 @@ Open app
 - No hosting/deployment — runs on developer's own machine.
 - No real-time sync across devices.
 
-## Frontend migration (complete)
+## Frontend (complete — all 5 pages)
 
-Streamlit replaced by FastAPI + React (Vite). See `docs/DESIGN.md` for design system.
+Streamlit replaced by FastAPI + React (Vite). All pages pixel-matched to `design/screens/` references.
 
-- `api.py` (FastAPI :8000) — Python bridge to agents/db
-- `frontend/` (React Vite :5173) — Glacier design system UI
-- `connectors/`, `agents/`, `db/`, `app.py` — unchanged
+Pages: LandingPage → Feed (For You) → Explore → Saved → Profile
 
 Privacy boundary unchanged — both processes run locally only.

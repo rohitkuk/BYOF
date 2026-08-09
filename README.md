@@ -30,8 +30,8 @@ It's also a learning project for progressively complex multi-agent AI architectu
 ## Architecture
 
 ```
-Open app
-  → Preference setup (categories + subcategories, saved locally)
+Landing page (auth gate via localStorage)
+  → Preference setup (first run)
 
 ┌─────────────── privacy boundary — local only from here ───────────────┐
 │  Connector agents (Google News, TechCrunch, etc.)                      │
@@ -39,7 +39,8 @@ Open app
 │    → Image pipeline: slug fetch → Playwright fallback → logo fallback  │
 │    → Weighing agent (score by category/subcategory preferences)        │
 │    → Aggregation agent (rank by score, cap at 20 items)                │
-│    → Streamlit reel feed (filter by category / date / type)            │
+│    → FastAPI api.py (:8000) → React Vite frontend (:5173)             │
+│       Feed · Explore · Saved · Profile                                 │
 └───────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -93,6 +94,8 @@ See [`docs/ROADMAP.md`](docs/ROADMAP.md) for full detail.
 - [x] **Slice 6c** — Frontend migration: Streamlit → FastAPI + React
 - [x] **Slice 7** — TechCrunch connector
 - [x] **Slice 8** — Papers with Code + The Rundown AI connectors
+- [x] **Slice 9** — Full navigation redesign: TopBar, BottomNav, ExplorePage, SavedPage, ProfilePage (pixel-exact to design screens)
+- [x] **Slice 10** — Landing page with localStorage auth bypass
 
 ### Sources
 

@@ -1,18 +1,21 @@
 export function FeedCard({ item, skipped = false, cardRef }) {
   let domain = ''
-  try {
-    domain = new URL(item.url).hostname.replace('www.', '')
-  } catch (_) {}
+  try { domain = new URL(item.url).hostname.replace('www.', '') } catch (_) {}
   const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=32`
 
   return (
-    <section ref={cardRef} style={cardStyle}>
-      {/* Background */}
+    <section
+      ref={cardRef}
+      onClick={() => window.open(item.url, '_blank', 'noopener,noreferrer')}
+      style={cardStyle}
+    >
+      {/* Background image or fallback gradient */}
       {item.image_url ? (
         <img
           src={item.image_url}
           alt=""
-          style={{ position: 'absolute', width: '100%', height: '100%', objectFit: 'cover' }}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+          onError={e => { e.target.style.display = 'none' }}
         />
       ) : (
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #0b0f10, #1d2022, #272a2c)' }} />
@@ -23,33 +26,56 @@ export function FeedCard({ item, skipped = false, cardRef }) {
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 5 }} />
       )}
 
-      {/* Gradient overlay */}
+      {/* Vignette */}
+      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.15)' }} />
+
+      {/* Gradient overlay — bottom to top */}
       <div style={{
-        position: 'absolute', bottom: 0, left: 0, right: 0, height: '70%',
-        background: 'linear-gradient(to top, rgba(11,15,16,0.96), rgba(11,15,16,0.5) 60%, transparent)',
+        position: 'absolute', bottom: 0, left: 0, right: 0, height: '75%',
+        background: 'linear-gradient(to top, rgba(10,17,40,0.97), rgba(10,17,40,0.55) 55%, transparent)',
       }} />
 
-      {/* Content overlay */}
-      <div style={{ position: 'absolute', bottom: '80px', left: '24px', right: '80px' }}>
-        {/* Category pills */}
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+      {/* Content overlay — category + title */}
+      <div style={{
+        position: 'absolute',
+        bottom: 'calc(var(--bottom-nav-height) + 72px)',
+        left: '24px', right: '80px',
+        zIndex: 10, pointerEvents: 'none',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
           {(item.categories || []).map(cat => (
             <span key={cat} style={pillStyle}>{cat}</span>
           ))}
+          {item.read_time && (
+            <span style={{ ...pillStyle, background: 'none', border: 'none', color: 'var(--text-dim)', letterSpacing: '0.08em', fontSize: '11px' }}>
+              {item.read_time} MIN READ
+            </span>
+          )}
         </div>
-
-        {/* Title */}
         <h2 style={titleStyle}>{item.title}</h2>
       </div>
 
-      {/* Meta bar */}
-      <div style={metaBarStyle}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
-          <img src={faviconUrl} alt="" style={{ width: '24px', height: '24px', borderRadius: '50%', flexShrink: 0 }} />
+      {/* Meta bar — source + read button */}
+      <div style={{
+        position: 'absolute',
+        bottom: 'calc(var(--bottom-nav-height) + 14px)',
+        left: '24px', right: '80px',
+        zIndex: 10,
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', minWidth: 0 }}>
+          <img
+            src={faviconUrl} alt=""
+            style={{ width: '24px', height: '24px', borderRadius: '50%', flexShrink: 0 }}
+            onError={e => { e.target.style.display = 'none' }}
+          />
           <span style={sourceStyle}>{item.source}</span>
-          <span style={dimStyle}>&nbsp;·&nbsp;{item.published_at}&nbsp;·&nbsp;{item.read_time} min read</span>
+          <span style={dimStyle}>&nbsp;·&nbsp;{item.published_at}</span>
         </div>
-        <button onClick={() => window.open(item.url, '_blank')} style={readBtnStyle}>
+        <button
+          onClick={e => { e.stopPropagation(); window.open(item.url, '_blank', 'noopener,noreferrer') }}
+          style={readBtnStyle}
+        >
           READ ↗
         </button>
       </div>
@@ -63,19 +89,21 @@ const cardStyle = {
   scrollSnapAlign: 'start',
   overflow: 'hidden',
   flexShrink: 0,
+  cursor: 'pointer',
 }
 
 const pillStyle = {
-  border: '1px solid var(--secondary)',
+  border: '1px solid rgba(147,207,235,0.5)',
   color: 'var(--secondary)',
   background: 'rgba(147,207,235,0.12)',
+  backdropFilter: 'blur(8px)',
   borderRadius: 'var(--radius-full)',
-  padding: '4px 12px',
+  padding: '4px 14px',
   fontSize: '11px',
   fontFamily: "'Hanken Grotesk', sans-serif",
   fontWeight: 600,
   textTransform: 'uppercase',
-  letterSpacing: '0.08em',
+  letterSpacing: '0.1em',
 }
 
 const titleStyle = {
@@ -84,52 +112,32 @@ const titleStyle = {
   fontWeight: 600,
   color: 'var(--text-primary)',
   lineHeight: 1.3,
-  marginTop: '10px',
   display: '-webkit-box',
   WebkitLineClamp: 3,
   WebkitBoxOrient: 'vertical',
   overflow: 'hidden',
-}
-
-const metaBarStyle = {
-  position: 'absolute',
-  bottom: '20px',
-  left: '24px',
-  right: '80px',
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  gap: '8px',
+  textShadow: '0 1px 4px rgba(0,0,0,0.5)',
 }
 
 const sourceStyle = {
   fontFamily: "'Hanken Grotesk', sans-serif",
-  fontSize: '13px',
-  fontWeight: 600,
+  fontSize: '13px', fontWeight: 600,
   color: 'var(--text-primary)',
-  whiteSpace: 'nowrap',
-  flexShrink: 0,
+  whiteSpace: 'nowrap', flexShrink: 0,
 }
 
 const dimStyle = {
   fontFamily: "'Hanken Grotesk', sans-serif",
-  fontSize: '13px',
-  color: 'var(--text-dim)',
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
+  fontSize: '13px', color: 'var(--text-dim)',
+  whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
 }
 
 const readBtnStyle = {
   fontFamily: "'Hanken Grotesk', sans-serif",
-  fontSize: '12px',
-  fontWeight: 600,
+  fontSize: '12px', fontWeight: 600,
   color: 'var(--secondary)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.05em',
-  background: 'none',
-  border: 'none',
-  cursor: 'pointer',
-  whiteSpace: 'nowrap',
-  flexShrink: 0,
+  textTransform: 'uppercase', letterSpacing: '0.05em',
+  background: 'none', border: 'none',
+  cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
+  padding: 0,
 }

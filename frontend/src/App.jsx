@@ -3,13 +3,31 @@ import { useFeed } from './hooks/useFeed'
 import { FeedCard } from './components/FeedCard'
 import { ActionRail } from './components/ActionRail'
 import { ProgressDots } from './components/ProgressDots'
-import { Sidebar } from './components/Sidebar'
+import { TopBar } from './components/TopBar'
+import { BottomNav } from './components/BottomNav'
+import { ExplorePage } from './components/ExplorePage'
+import { SavedPage } from './components/SavedPage'
+import { ProfilePage } from './components/ProfilePage'
+import { LandingPage } from './components/LandingPage'
 
 export default function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [signedIn, setSignedIn] = useState(
+    () => !!localStorage.getItem('byof_signed_in')
+  )
+  const [view, setView] = useState('feed')
   const [activeIndex, setActiveIndex] = useState(0)
   const [signals, setSignals] = useState({})
   const [filters, setFilters] = useState({})
+
+  const handleSignIn = () => {
+    localStorage.setItem('byof_signed_in', '1')
+    setSignedIn(true)
+  }
+
+  if (!signedIn) {
+    return <LandingPage onSignIn={handleSignIn} />
+  }
+
   const { items, loading, error } = useFeed(filters)
   const cardRefs = useRef([])
 
@@ -32,93 +50,118 @@ export default function App() {
     setSignals(prev => ({ ...prev, [url]: state }))
   }, [])
 
-  if (loading) {
-    return (
-      <div style={centerStyle}>
-        <p style={{ fontFamily: "'Hanken Grotesk', sans-serif", color: 'var(--text-muted)', fontSize: '16px' }}>
-          Loading your feed...
-        </p>
-      </div>
-    )
-  }
+  const handleApplyFilters = useCallback((newFilters) => {
+    setFilters(newFilters)
+    setView('feed')
+  }, [])
 
-  if (error) {
-    return (
-      <div style={centerStyle}>
-        <p style={{ fontFamily: "'Hanken Grotesk', sans-serif", color: 'var(--secondary)', fontSize: '16px' }}>
-          Could not load feed. Is api.py running?
-        </p>
-      </div>
-    )
-  }
-
+  const savedItems = items.filter(i => signals[i.url]?.saved)
   const activeItem = items[activeIndex]
 
   return (
     <>
-      {/* Sidebar */}
-      <Sidebar
-        open={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-        items={items}
-        filters={filters}
-        onApply={setFilters}
-      />
+      <TopBar view={view} onNavigate={setView} />
 
-      {/* Fixed top bar */}
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, pointerEvents: 'none' }}>
-        <button style={fabStyle} onClick={() => setSidebarOpen(o => !o)}>☰</button>
-        <span style={wordmarkStyle}>BYOF</span>
-      </div>
+      {/* ── Feed view ── */}
+      {view === 'feed' && (
+        <>
+          {loading && (
+            <div style={centerStyle}>
+              <div style={spinnerStyle} />
+              <p style={statusTextStyle}>Loading your feed…</p>
+            </div>
+          )}
 
-      {/* Progress dots */}
-      <ProgressDots total={items.length} current={activeIndex} />
+          {error && !loading && (
+            <div style={centerStyle}>
+              <span className="material-symbols-outlined" style={{ fontSize: '40px', color: 'var(--outline-variant)', marginBottom: '16px' }}>wifi_off</span>
+              <p style={statusTextStyle}>Could not load feed.</p>
+              <p style={{ ...statusTextStyle, fontSize: '13px', color: 'var(--text-dim)', marginTop: '4px' }}>
+                Is <code style={{ color: 'var(--tertiary)' }}>api.py</code> running on :8000?
+              </p>
+            </div>
+          )}
 
-      {/* Action rail */}
-      {activeItem && (
-        <ActionRail
-          key={activeItem.url}
-          item={activeItem}
-          onSignal={(state) => handleSignal(activeItem.url, state)}
-        />
+          {!loading && !error && items.length > 0 && (
+            <>
+              <ProgressDots total={items.length} current={activeIndex} />
+              {activeItem && (
+                <ActionRail
+                  key={activeItem.url}
+                  item={activeItem}
+                  onSignal={state => handleSignal(activeItem.url, state)}
+                />
+              )}
+              <div style={feedStyle}>
+                {items.map((item, i) => (
+                  <FeedCard
+                    key={item.url}
+                    item={item}
+                    skipped={signals[item.url]?.skipped}
+                    cardRef={el => { cardRefs.current[i] = el }}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+
+          {!loading && !error && items.length === 0 && (
+            <div style={centerStyle}>
+              <span className="material-symbols-outlined" style={{ fontSize: '40px', color: 'var(--outline-variant)', marginBottom: '16px' }}>inbox</span>
+              <p style={statusTextStyle}>No articles yet.</p>
+              <p style={{ ...statusTextStyle, fontSize: '13px', color: 'var(--text-dim)', marginTop: '4px' }}>
+                Run <code style={{ color: 'var(--tertiary)' }}>uv run python app.py</code> to fetch content.
+              </p>
+            </div>
+          )}
+        </>
       )}
 
-      {/* Scroll-snap feed */}
-      <div style={feedStyle}>
-        {items.map((item, i) => (
-          <FeedCard
-            key={item.url}
-            item={item}
-            skipped={signals[item.url]?.skipped}
-            cardRef={el => { cardRefs.current[i] = el }}
-          />
-        ))}
-      </div>
+      {/* ── Explore view ── */}
+      {view === 'explore' && (
+        <ExplorePage items={items} filters={filters} onApply={handleApplyFilters} />
+      )}
+
+      {/* ── Saved view ── */}
+      {view === 'saved' && (
+        <SavedPage items={savedItems} />
+      )}
+
+      {/* ── Profile view ── */}
+      {view === 'profile' && (
+        <ProfilePage />
+      )}
+
+      <BottomNav view={view} onNavigate={setView} />
     </>
   )
 }
 
-const centerStyle = {
-  height: '100vh', display: 'flex', alignItems: 'center',
-  justifyContent: 'center', background: 'var(--bg)',
-}
-
-const fabStyle = {
-  position: 'absolute', top: '16px', left: '16px',
-  width: '48px', height: '48px', borderRadius: '50%',
-  background: 'var(--secondary)', border: 'none', cursor: 'pointer',
-  color: 'var(--on-secondary)', fontSize: '20px',
-  display: 'flex', alignItems: 'center', justifyContent: 'center',
-  pointerEvents: 'auto',
-}
-
-const wordmarkStyle = {
-  position: 'absolute', top: '20px', right: '16px',
-  fontFamily: "'Playfair Display', Georgia, serif",
-  fontSize: '18px', fontWeight: 700, color: 'var(--primary)',
-  letterSpacing: '0.1em', pointerEvents: 'auto',
-}
-
 const feedStyle = {
-  height: '100vh', overflowY: 'scroll', scrollSnapType: 'y mandatory',
+  position: 'fixed', inset: 0,
+  overflowY: 'scroll',
+  scrollSnapType: 'y mandatory',
+  zIndex: 0,
+}
+
+const centerStyle = {
+  position: 'fixed', inset: 0,
+  display: 'flex', flexDirection: 'column',
+  alignItems: 'center', justifyContent: 'center',
+  background: 'var(--bg)',
+  zIndex: 1,
+}
+
+const statusTextStyle = {
+  fontFamily: "'Hanken Grotesk', sans-serif",
+  fontSize: '16px', color: 'var(--text-muted)',
+}
+
+const spinnerStyle = {
+  width: '32px', height: '32px',
+  border: '3px solid var(--outline-variant)',
+  borderTopColor: 'var(--secondary)',
+  borderRadius: '50%',
+  animation: 'spin 700ms linear infinite',
+  marginBottom: '16px',
 }

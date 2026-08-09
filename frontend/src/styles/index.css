@@ -14,6 +14,11 @@
   --secondary:              #93cfeb;
   --tertiary:               #69d4f4;
   --on-secondary:           #003546;
+  --on-tertiary:            #003642;
+  --secondary-container:    #01526a;
+  --on-secondary-container: #88c4e0;
+  --primary-container:      #0a1128;
+  --on-primary-container:   #767c99;
 
   /* Text */
   --text-primary:           #e0e3e5;
@@ -42,9 +47,20 @@
   --container-padding:      24px;
   --gutter:                 16px;
 
+  /* Layout */
+  --top-bar-height:         64px;
+  --bottom-nav-height:      76px;
+
   /* Components */
   --action-btn-bg:          rgba(255,255,255,0.10);
   --sidebar-bg:             #0b0f10;
+}
+
+/* Desktop: no bottom nav */
+@media (min-width: 768px) {
+  :root {
+    --bottom-nav-height: 0px;
+  }
 }
 
 * {
@@ -62,4 +78,62 @@ body {
 
 h1, h2, h3, h4, .headline, .wordmark {
   font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* Material Symbols */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+.icon-filled {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Responsive visibility */
+@media (min-width: 768px) {
+  .mobile-only { display: none !important; }
+}
+@media (max-width: 767px) {
+  .desktop-only { display: none !important; }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 0; }
+
+/* Spring animation */
+.spring {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Glow on active */
+.glow-active {
+  box-shadow: 0 0 15px rgba(105, 212, 244, 0.3);
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Spinner */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Explore page grid */
+@media (min-width: 768px) {
+  .explore-left  { grid-column: 1 / 9 !important; }
+  .explore-right { grid-column: 9 / 13 !important; }
 }

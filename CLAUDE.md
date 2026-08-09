@@ -10,13 +10,16 @@ Entrypoint: `app.py` (Python).
 
 ## Current Focus
 
-**Active: V1 Slice 7 — TechCrunch connector.**
-Frontend migration (Slice 6c) complete — FastAPI + React live, Streamlit removed.
+**Active: Next connector or V2 planning.**
+V1 frontend complete — all 5 pages built and wired (Feed, Explore, Saved, Profile, Landing).
 
 Full plan: `docs/ROADMAP.md`. Architecture/flow: `docs/ARCHITECTURE.md`.
 Don't build ahead of current slice — flag if request skips steps.
 
-**Recently completed:** Slice 8 — `connectors/papers_with_code.py` + `connectors/the_rundown_ai.py`, source filter in sidebar, Newsletter type support.
+**Recently completed:**
+- Slice 8 — `connectors/papers_with_code.py` + `connectors/the_rundown_ai.py`, source filter, Newsletter type support
+- Slice 9 — Full navigation redesign: TopBar, BottomNav, ExplorePage, SavedPage, ProfilePage (replaced Sidebar/FilterPills drawer)
+- Slice 10 — Landing page with localStorage auth bypass (`LandingPage.jsx`)
 
 ## Directory Structure
 
@@ -81,8 +84,17 @@ _(test/lint commands: add once they exist)_
 
 ## Current State
 
-- `docs/DESIGN.md` ✅ — Glacier design system + migration steps 1-7
-- `design/screens/` ✅ — 5 Stitch HTML reference screens
+- `docs/DESIGN.md` ✅ — Glacier design system
+- `design/screens/` ✅ — 5 Stitch HTML reference screens (feed, explore, saved, profile, landing)
 - `design/screenshots/` ✅ — 5 reference PNGs
-- `api.py` ✅ — FastAPI backend (Step 1)
-- `frontend/` ✅ — React SPA complete (Steps 2–6): FeedCard, ActionRail, ProgressDots, Sidebar, FilterPills
+- `api.py` ✅ — FastAPI backend (5 endpoints, :8000)
+- `frontend/` ✅ — React SPA, all 5 pages complete:
+  - `LandingPage.jsx` — auth gate, localStorage bypass, ambient image, Google sign-in button
+  - `TopBar.jsx` — fixed header, mobile (hamburger+wordmark+avatar) + desktop (nav links)
+  - `BottomNav.jsx` — mobile-only fixed bottom nav, 4 tabs with active state
+  - `FeedCard.jsx` — full-viewport scroll-snap card, image, overlay, action rail
+  - `ActionRail.jsx` — fixed right-side like/save/skip with per-item signals
+  - `ProgressDots.jsx` — desktop-only scroll indicator
+  - `ExplorePage.jsx` — content format segmented control, topic pills, source filter, apply/reset
+  - `SavedPage.jsx` — search, type filter pills, saved item cards, empty state
+  - `ProfilePage.jsx` — avatar, stats row, preference pills, app info
