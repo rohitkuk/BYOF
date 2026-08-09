@@ -28,8 +28,8 @@ Working curated feed from Phase 1 sources, weighted, ranked, filterable.
         publisher logo fallback, category/date/type filters, 20-item feed cap
      6b. ✅ Reels UI redesign — full-viewport cards, coral pills, bottom-up gradient,
          sidebar → inline top bar, compact filter bar, 17px/800 typography
-  7. Add TechCrunch connector
-  8. Add remaining Phase 1 connectors (Papers with Code, Newsletter)
+  7. ✅ Add TechCrunch connector
+  8. ✅ Add remaining Phase 1 connectors (Papers with Code, The Rundown AI newsletter)
 
 ### V2 — Item-level swarm
 Same feed, but scoring happens per content item instead of per feed batch.
@@ -56,4 +56,4 @@ automatically, within a budget.
 
 ## Status
 
-Current slice: **V1 Slice 7** — TechCrunch connector.
+Current slice: **V1 complete** — all Phase 1 sources live. Next: V2 planning.

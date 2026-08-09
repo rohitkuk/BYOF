@@ -10,11 +10,11 @@ Entrypoint: `app.py` (Python).
 
 ## Current Focus
 
-**Active slice: V1 Slice 7** — TechCrunch connector.
+**Active slice: V1 Slice 8 complete — V1 Phase 1 sources done.** Next: V2 planning.
 Full plan: `docs/ROADMAP.md`. Architecture/flow: `docs/ARCHITECTURE.md`.
 Don't build ahead of current slice — flag if request skips steps.
 
-**Recently completed:** Slice 6b — `streamlit_app.py` full-screen reel feed, FAB drawer, scroll snap, action rail like/dislike/save (CSS-only), BYOF wordmark, relative timestamps, favicons.
+**Recently completed:** Slice 8 — `connectors/papers_with_code.py` + `connectors/the_rundown_ai.py`, source filter in sidebar, Newsletter type support.
 
 ## Directory Structure
 
