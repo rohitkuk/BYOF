@@ -10,13 +10,16 @@ Entrypoint: `app.py` (Python).
 
 ## Current Focus
 
-**Active: V1 Slice 7 — TechCrunch connector.**
-Before starting: complete frontend migration Steps 1-7 in `docs/DESIGN.md`.
+**Active: Next connector or V2 planning.**
+V1 frontend complete — all 5 pages built and wired (Feed, Explore, Saved, Profile, Landing).
 
 Full plan: `docs/ROADMAP.md`. Architecture/flow: `docs/ARCHITECTURE.md`.
 Don't build ahead of current slice — flag if request skips steps.
 
-**Recently completed:** Slice 8 — `connectors/papers_with_code.py` + `connectors/the_rundown_ai.py`, source filter in sidebar, Newsletter type support.
+**Recently completed:**
+- Slice 8 — `connectors/papers_with_code.py` + `connectors/the_rundown_ai.py`, source filter, Newsletter type support
+- Slice 9 — Full navigation redesign: TopBar, BottomNav, ExplorePage, SavedPage, ProfilePage (replaced Sidebar/FilterPills drawer)
+- Slice 10 — Landing page with localStorage auth bypass (`LandingPage.jsx`)
 
 ## Directory Structure
 
@@ -27,8 +30,8 @@ Don't build ahead of current slice — flag if request skips steps.
 | `db/` | Local storage layer |
 | `design/` | Stitch reference screens + screenshots (read-only) |
 | `docs/` | Architecture and roadmap docs |
-| `frontend/` | React (Vite) SPA — stubs exist, built in migration steps |
-| `api.py` | FastAPI server — stub exists, built in Step 1 |
+| `frontend/` | React (Vite) SPA — Glacier design system, migration complete |
+| `api.py` | FastAPI server — 5 endpoints, :8000 |
 
 ## Architecture Principles
 
@@ -73,9 +76,7 @@ Agents in `agents/` consume this shape only — never reach into connector inter
 - Environment & dependencies: [uv](https://github.com/astral-sh/uv) — no pip/venv directly
 - Setup: `uv sync`
 - Add dependency: `uv add <package>`
-- Run: `uv run python app.py`
-
-Planned (post-migration):
+- Fetch + image pipeline: `uv run python app.py`
 - Backend:  `uv run python api.py`       → http://localhost:8000
 - Frontend: `cd frontend && npm run dev` → http://localhost:5173
 
@@ -83,9 +84,17 @@ _(test/lint commands: add once they exist)_
 
 ## Current State
 
-- `docs/DESIGN.md` ✅ — Glacier design system + migration steps 1-7
-- `design/screens/` ✅ — 5 Stitch HTML reference screens
+- `docs/DESIGN.md` ✅ — Glacier design system
+- `design/screens/` ✅ — 5 Stitch HTML reference screens (feed, explore, saved, profile, landing)
 - `design/screenshots/` ✅ — 5 reference PNGs
-- `streamlit_app.py` ⚠️  — active now, deleted in migration Step 7
-- `api.py` ⬜ — stub only, built in migration Step 1
-- `frontend/` ⬜ — stubs only, built in migration Steps 2-6
+- `api.py` ✅ — FastAPI backend (5 endpoints, :8000)
+- `frontend/` ✅ — React SPA, all 5 pages complete:
+  - `LandingPage.jsx` — auth gate, localStorage bypass, ambient image, Google sign-in button
+  - `TopBar.jsx` — fixed header, mobile (hamburger+wordmark+avatar) + desktop (nav links)
+  - `BottomNav.jsx` — mobile-only fixed bottom nav, 4 tabs with active state
+  - `FeedCard.jsx` — full-viewport scroll-snap card, image, overlay, action rail
+  - `ActionRail.jsx` — fixed right-side like/save/skip with per-item signals
+  - `ProgressDots.jsx` — desktop-only scroll indicator
+  - `ExplorePage.jsx` — content format segmented control, topic pills, source filter, apply/reset
+  - `SavedPage.jsx` — search, type filter pills, saved item cards, empty state
+  - `ProfilePage.jsx` — avatar, stats row, preference pills, app info
