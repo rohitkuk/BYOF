@@ -47,17 +47,22 @@ set once via UI, stored in `preferences.json`. Returns items with `_weight` fiel
 Takes weighed items, computes `_score = recency_timestamp × weight`, sorts descending.
 Accepts optional `limit` parameter — V1 caps feed at 20 items (anti-doom-scroll).
 
-**Frontend** (`streamlit_app.py`)
-- Preference setup flow (first run or edit): category + subcategory multiselect, saved to
-  `preferences.json`
-- Feed view: snap-scroll reel cards rendered via `st.html()`, one card per item
-- Each card: media box (article image → publisher logo → category-colored gradient fallback),
-  title (clickable link), summary excerpt, source + date metadata
-- Filters: category, subcategory, date range (Today / 7d / 30d / All), content type
-- Items with images sorted to top of filtered results
-- Feed capped at 20 items; caption shows count + refresh prompt
-- Refresh button: fetches new items, runs slug-only image resolution (no Playwright —
-  too slow for interactive use), updates logos
+**API server** (`api.py` — FastAPI, port 8000)
+- 5 endpoints: `GET /health`, `GET/POST /preferences`, `GET /feed`, `POST /refresh`
+- `/feed`: runs weighing + aggregation agents, applies optional query filters
+  (category, date, type, source), returns up to 20 shaped items
+- `/refresh`: runs all connectors + image pipeline (no Playwright — too slow for interactive use)
+- CORS: allows `http://localhost:5173` only
+
+**Frontend** (`frontend/` — React Vite, port 5173)
+- Glacier Modern Editorial design system (`docs/DESIGN.md`)
+- Fonts: Playfair Display (headlines/wordmark) + Hanken Grotesk (everything else)
+- `FeedCard`: full-viewport scroll-snap cards, article image, gradient overlay, category pills,
+  title, source meta, READ link
+- `ActionRail`: fixed right-side LIKE / SKIP / SAVE buttons with active-state colours
+- `ProgressDots`: fixed left-edge scroll indicator
+- `Sidebar` + `FilterPills`: slide-in drawer with category/date/type/source filters;
+  Apply re-fetches `/feed` with query params
 
 **CLI fetch script** (`app.py`)
 Offline fetch pipeline: `fetch()` → `save_items()` → `refresh_article_images(use_playwright=True)`
@@ -77,7 +82,7 @@ Open app
 │    → refresh_publisher_logos()                                 │
 │    → Weighing agent (score by category/subcategory prefs)      │
 │    → Aggregation agent (rank, cap at 20)                       │
-│    → Streamlit reel feed (filter by category/date/type)        │
+│    → FastAPI api.py (:8000) → React frontend (:5173)          │
 └───────────────────────────────────────────────────────────────┘
 ```
 
@@ -100,15 +105,12 @@ Open app
 - No hosting/deployment — runs on developer's own machine.
 - No real-time sync across devices.
 
-## Planned: Frontend migration
+## Frontend migration (complete)
 
-Streamlit → FastAPI + React (Vite). See `docs/DESIGN.md` Steps 1-7.
+Streamlit replaced by FastAPI + React (Vite). See `docs/DESIGN.md` for design system.
 
-Target:
 - `api.py` (FastAPI :8000) — Python bridge to agents/db
 - `frontend/` (React Vite :5173) — Glacier design system UI
 - `connectors/`, `agents/`, `db/`, `app.py` — unchanged
 
-Design system: Glacier Modern Editorial (`docs/DESIGN.md`)
-Fonts: Playfair Display + Hanken Grotesk
-Privacy boundary unchanged — both processes local only.
+Privacy boundary unchanged — both processes run locally only.

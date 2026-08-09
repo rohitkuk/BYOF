@@ -11,7 +11,7 @@ Entrypoint: `app.py` (Python).
 ## Current Focus
 
 **Active: V1 Slice 7 — TechCrunch connector.**
-Before starting: complete frontend migration Steps 1-7 in `docs/DESIGN.md`.
+Frontend migration (Slice 6c) complete — FastAPI + React live, Streamlit removed.
 
 Full plan: `docs/ROADMAP.md`. Architecture/flow: `docs/ARCHITECTURE.md`.
 Don't build ahead of current slice — flag if request skips steps.
@@ -27,8 +27,8 @@ Don't build ahead of current slice — flag if request skips steps.
 | `db/` | Local storage layer |
 | `design/` | Stitch reference screens + screenshots (read-only) |
 | `docs/` | Architecture and roadmap docs |
-| `frontend/` | React (Vite) SPA — stubs exist, built in migration steps |
-| `api.py` | FastAPI server — stub exists, built in Step 1 |
+| `frontend/` | React (Vite) SPA — Glacier design system, migration complete |
+| `api.py` | FastAPI server — 5 endpoints, :8000 |
 
 ## Architecture Principles
 
@@ -73,9 +73,7 @@ Agents in `agents/` consume this shape only — never reach into connector inter
 - Environment & dependencies: [uv](https://github.com/astral-sh/uv) — no pip/venv directly
 - Setup: `uv sync`
 - Add dependency: `uv add <package>`
-- Run: `uv run python app.py`
-
-Planned (post-migration):
+- Fetch + image pipeline: `uv run python app.py`
 - Backend:  `uv run python api.py`       → http://localhost:8000
 - Frontend: `cd frontend && npm run dev` → http://localhost:5173
 
@@ -86,6 +84,5 @@ _(test/lint commands: add once they exist)_
 - `docs/DESIGN.md` ✅ — Glacier design system + migration steps 1-7
 - `design/screens/` ✅ — 5 Stitch HTML reference screens
 - `design/screenshots/` ✅ — 5 reference PNGs
-- `streamlit_app.py` ⚠️  — active now, deleted in migration Step 7
-- `api.py` ✅ — FastAPI backend complete (Step 1 done)
-- `frontend/` 🔄 — Steps 2–4 done (scaffold, hooks, FeedCard); Steps 5–6 remain (ActionRail, Sidebar)
+- `api.py` ✅ — FastAPI backend (Step 1)
+- `frontend/` ✅ — React SPA complete (Steps 2–6): FeedCard, ActionRail, ProgressDots, Sidebar, FilterPills

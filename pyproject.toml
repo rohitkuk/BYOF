@@ -10,7 +10,6 @@ dependencies = [
     "gnews[fulltext]>=0.8.2",
     "playwright>=1.62.0",
     "requests>=2.34.2",
-    "streamlit>=1.61.1",
     "uvicorn>=0.52.1",
 ]
 

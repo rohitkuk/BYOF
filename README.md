@@ -20,9 +20,8 @@ It's also a learning project for progressively complex multi-agent AI architectu
 | Package manager | [uv](https://github.com/astral-sh/uv) |
 | RSS parsing | feedparser |
 | Local database | SQLite |
-| Frontend | Streamlit *(being replaced — see Slice 6c)* |
-| FastAPI | API layer *(planned — migration Step 1)* |
-| React (Vite) | Frontend SPA *(migration Steps 2-6)* |
+| API | FastAPI + uvicorn |
+| Frontend | React (Vite) — Glacier design system |
 | Image resolution | requests (slug-based) + Playwright (JS redirect fallback) |
 | Agent orchestration | Custom multi-agent *(V2+)* |
 
@@ -91,7 +90,7 @@ See [`docs/ROADMAP.md`](docs/ROADMAP.md) for full detail.
 - [x] **Slice 5** — Weighing agent with real preference ranking (category + subcategory scoring)
 - [x] **Slice 6** — Snap-scroll reel cards, article og:images (slug + Playwright fallback), publisher logo fallback, category/date/type filters, 20-item feed cap
 - [x] **Slice 6b** — UI redesign (FAB drawer, action rail, like/skip/save)
-- [ ] **Slice 6c** — Frontend migration: Streamlit → FastAPI + React
+- [x] **Slice 6c** — Frontend migration: Streamlit → FastAPI + React
 - [x] **Slice 7** — TechCrunch connector
 - [x] **Slice 8** — Papers with Code + The Rundown AI connectors
 
@@ -116,12 +115,15 @@ cd BYOF
 uv sync
 uv run playwright install chromium   # for JS redirect resolution
 uv run python app.py                 # fetch + resolve images (full pipeline)
-uv run streamlit run streamlit_app.py
+
+# Terminal 1 — API
+uv run python api.py                 # → http://localhost:8000
+
+# Terminal 2 — Frontend
+cd frontend && npm install && npm run dev  # → http://localhost:5173
 ```
 
-On first open, BYOF asks which categories you care about (AI & ML, Technology, Business, etc.) — then shows a ranked, filtered feed of up to 20 items.
-
-Use **Refresh** in the app to pull new articles. For a full image backfill (including Playwright resolution), run `app.py` from the terminal.
+Open http://localhost:5173. For a full image backfill (including Playwright resolution), run `app.py` from the terminal before starting the servers.
 
 ---
 
