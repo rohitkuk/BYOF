@@ -1,4 +1,4 @@
-export function FeedCard({ item }) {
+export function FeedCard({ item, skipped = false, cardRef }) {
   let domain = ''
   try {
     domain = new URL(item.url).hostname.replace('www.', '')
@@ -6,7 +6,7 @@ export function FeedCard({ item }) {
   const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=32`
 
   return (
-    <section style={cardStyle}>
+    <section ref={cardRef} style={cardStyle}>
       {/* Background */}
       {item.image_url ? (
         <img
@@ -16,6 +16,11 @@ export function FeedCard({ item }) {
         />
       ) : (
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #0b0f10, #1d2022, #272a2c)' }} />
+      )}
+
+      {/* Skip overlay */}
+      {skipped && (
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 5 }} />
       )}
 
       {/* Gradient overlay */}
