@@ -1,0 +1,252 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Saved Library - BYOF</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#101415",
+                        "tertiary-fixed-dim": "#69d4f4",
+                        "on-secondary": "#003546",
+                        "on-surface-variant": "#c6c6ce",
+                        "surface-tint": "#bfc5e4",
+                        "inverse-on-surface": "#2d3133",
+                        "error": "#ffb4ab",
+                        "surface-variant": "#323537",
+                        "surface-bright": "#363a3b",
+                        "surface": "#101415",
+                        "surface-container-lowest": "#0b0f10",
+                        "primary": "#bfc5e4",
+                        "on-primary": "#292f48",
+                        "error-container": "#93000a",
+                        "inverse-surface": "#e0e3e5",
+                        "on-tertiary-fixed-variant": "#004e5f",
+                        "on-secondary-fixed-variant": "#004d64",
+                        "secondary-container": "#01526a",
+                        "surface-container-highest": "#323537",
+                        "outline-variant": "#46464d",
+                        "on-tertiary": "#003642",
+                        "on-error-container": "#ffdad6",
+                        "outline": "#909098",
+                        "on-tertiary-fixed": "#001f27",
+                        "tertiary-fixed": "#b2ebff",
+                        "on-error": "#690005",
+                        "tertiary-container": "#00151b",
+                        "surface-container": "#1d2022",
+                        "primary-fixed": "#dce1ff",
+                        "inverse-primary": "#575d78",
+                        "secondary-fixed-dim": "#93cfeb",
+                        "secondary": "#93cfeb",
+                        "on-secondary-fixed": "#001f2a",
+                        "primary-container": "#0a1128",
+                        "on-background": "#e0e3e5",
+                        "on-secondary-container": "#88c4e0",
+                        "on-primary-fixed-variant": "#3f465f",
+                        "surface-container-high": "#272a2c",
+                        "tertiary": "#69d4f4",
+                        "on-tertiary-container": "#0089a5",
+                        "on-primary-container": "#767c99",
+                        "on-surface": "#e0e3e5",
+                        "primary-fixed-dim": "#bfc5e4",
+                        "surface-container-low": "#191c1e",
+                        "surface-dim": "#101415",
+                        "on-primary-fixed": "#141a32",
+                        "secondary-fixed": "#bde9ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section-gap": "80px",
+                        "container-padding": "24px",
+                        "unit": "8px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Playfair Display"],
+                        "headline-lg-mobile": ["Playfair Display"],
+                        "body-md": ["Hanken Grotesk"],
+                        "label-md": ["Hanken Grotesk"],
+                        "display-lg": ["Playfair Display"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "headline-lg": ["Playfair Display"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "1.4", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "display-lg": ["64px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg": ["40px", { "lineHeight": "1.2", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen pb-24 md:pb-0">
+<!-- TopAppBar (from JSON) -->
+<header class="w-full top-0 sticky bg-background/80 backdrop-blur-xl z-50">
+<div class="flex items-center justify-between px-container-padding h-16 w-full max-w-[1280px] mx-auto">
+<button class="text-tertiary dark:text-tertiary hover:opacity-80 transition-opacity active:scale-95 duration-200">
+<span class="material-symbols-outlined text-2xl" data-icon="menu">menu</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden hover:opacity-80 transition-opacity active:scale-95 duration-200 cursor-pointer">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="A small circular avatar portrait of a sophisticated person in a modern studio setting with dramatic, moody lighting and a deep navy background. The style is premium editorial photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAwr5En5whkUCfOJ0iu_hgf5jc8E3OII9XvXkh9n2pFYBDMvaqYbU25QU4pH20p2byWT0UlPUWMYRwVdWyfYsp0SXPQRTrDac_mbEygG_OaPhg4SLAWMigtrw5LuJQJeyJWGouQpArEHIMviLjHxAfu8bl6Ihhbw3SNbzVrVkf8gHArwD7dU8eZ7iB5_AavxHAFO22CjIH25JpX-b-aCk9pprLe9pvR57T4NJ5fTyk3x4mMHiLWpAuIw">
+</div>
+</div>
+</header>
+<main class="max-w-[1280px] mx-auto md:px-container-padding pt-6 md:pt-12 px-container-padding">
+<!-- Header Section -->
+<section class="mb-8 md:mb-12">
+<div class="flex flex-col items-center mb-8"><h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface tracking-tighter font-bold">BYOF</h1><p class="text-on-surface-variant font-label-md uppercase tracking-widest text-xs mt-2">Saved Library</p></div>
+<!-- Search Bar -->
+<div class="relative max-w-2xl">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline">search</span>
+</div>
+<input class="w-full bg-surface-container-highest border border-white/10 py-3 pl-12 pr-4 text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-tertiary focus:ring-1 focus:ring-tertiary transition-colors shadow-none font-body-md text-body-md rounded-full" placeholder="Search your library..." type="text">
+</div>
+</section>
+<!-- Filters -->
+<section class="mb-10 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
+<div class="flex gap-3 w-max">
+<button class="bg-tertiary text-on-tertiary px-6 py-2 rounded-full font-label-md text-label-md transition-transform active:scale-95">All</button>
+<button class="bg-transparent border-[2px] border-tertiary text-tertiary px-6 py-2 rounded-full font-label-md text-label-md hover:bg-tertiary/10 transition-colors active:scale-95">Articles</button>
+<button class="bg-transparent border-[2px] border-tertiary text-tertiary px-6 py-2 rounded-full font-label-md text-label-md hover:bg-tertiary/10 transition-colors active:scale-95">Videos</button>
+<button class="bg-transparent border-[2px] border-tertiary text-tertiary px-6 py-2 rounded-full font-label-md text-label-md hover:bg-tertiary/10 transition-colors active:scale-95">Papers</button>
+</div>
+</section>
+<!-- Content Grid (Bento/Card layout) -->
+<section class="grid grid-cols-1 mb-section-gap gap-gutter">
+<!-- Card 1 -->
+<article class="bg-surface-container-low rounded-lg border border-white/10 overflow-hidden hover:bg-surface-container transition-colors group cursor-pointer flex flex-col h-full rounded-xl"><div class="flex flex-row gap-4 p-3 items-center">
+<div class="w-24 h-24 shrink-0 rounded-lg overflow-hidden relative">
+<img alt="Article thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEzFFWU8QvfwqQTS-Ee7yGkR-spCb69QNQoQUbdefYoVy0UeKqtZ_GVFpnGcVqYKHP0Z4Y8qDkaH3wQhxPsJzzkRbvYcdCi5CtUOIccjeWtoTVvui9OctrbjeCijXSdiYpltpzXqVIoQGlXljMekcWM-XYJA7lv2fj4G9Sv3MAdcRyoCSVh6w184fVGfuot2AlWEfn8WG6Dq1uaxgHw4fIQfpkxrLwW0DvGd6wkEsU7la4UXRUwUPUew">
+<div class="absolute top-1 left-1 bg-tertiary/15 text-tertiary px-2 py-0.5 rounded-full font-label-md text-[10px] uppercase backdrop-blur-md">Article</div>
+</div>
+<div class="flex-grow flex flex-col justify-between min-w-0">
+<div class="flex items-center gap-2 mb-1">
+<span class="font-label-md text-on-surface-variant text-xs truncate">Design Quarterly</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="font-label-md text-on-surface-variant text-xs">2h ago</span>
+</div>
+<h3 class="font-headline-md text-on-surface text-[18px] line-clamp-2 leading-tight">The Evolution of Soft-Minimalism in Modern UI</h3>
+</div>
+<button class="text-on-surface-variant hover:text-tertiary transition-colors p-1">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div></article>
+<!-- Card 2 -->
+<article class="bg-surface-container-low rounded-lg border border-white/10 overflow-hidden hover:bg-surface-container transition-colors group cursor-pointer flex flex-col h-full rounded-xl"><div class="flex flex-row gap-4 p-3 items-center">
+<div class="w-24 h-24 shrink-0 rounded-lg overflow-hidden relative">
+<img alt="Video thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_il6nk1UWdtnIk4n2vEa_XzPIk9AOH1iLfJqyzqjOWdP9Lnz08sp4p42H_u1KPpzAu3nE6-9IIVX8T9Tv2ghKfJjYSuAMg-I7lczYnO2A_SO61967BKZ32iYRRJRmj6mRKjB0qvsMRnppxeBmfvfAtFO3nhV-unO4ycbe6qAlQtGGsPibwdd3GkraXntOctyFvn0OYepInuboL_kw7iA7gO_TrWg0DXRRgwzwrYE47hHMNCUbvh_ALw">
+<div class="absolute top-1 left-1 bg-tertiary/15 text-tertiary px-2 py-0.5 rounded-full font-label-md text-[10px] uppercase backdrop-blur-md">Video</div>
+<div class="absolute bottom-1 right-1 bg-black/60 text-white px-1.5 py-0.5 rounded-md text-[10px] backdrop-blur-sm">12:45</div>
+</div>
+<div class="flex-grow flex flex-col justify-between min-w-0">
+<div class="flex items-center gap-2 mb-1">
+<span class="font-label-md text-on-surface-variant text-xs truncate">Tech Insights</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="font-label-md text-on-surface-variant text-xs">Yesterday</span>
+</div>
+<h3 class="font-headline-md text-on-surface text-[18px] line-clamp-2 leading-tight">Understanding Fluid-Fixed Hybrid Grids</h3>
+</div>
+<button class="text-on-surface-variant hover:text-tertiary transition-colors p-1">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div></article>
+<!-- Card 3 -->
+<article class="bg-surface-container-low rounded-lg border border-white/10 overflow-hidden hover:bg-surface-container transition-colors group cursor-pointer flex flex-col h-full rounded-xl"><div class="flex flex-row gap-4 p-3 items-center">
+<div class="w-24 h-24 shrink-0 rounded-lg overflow-hidden relative bg-surface-container-highest flex items-center justify-center">
+<img alt="Paper thumbnail" class="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-overlay group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2uV5OMF91HE_lNX0pXVf1fOpoNsw6iCn_-Mi3ybWsJOXY1axNELweLkunTdkR5--udcK8IEh6IBPlVesGXU_HgPBxhxBscYlMvHNUXl7Qwglhyn_wSx5jeHRWuB80i6FboLtYt7Urh3hoiEBVwLDCz6OtNTLQf04vWJNKj6kpv-QDfpzJfD8JQ-rxBLXtbuOt_dBi194OI8AOQF1lMqeL2hxpZ4A2chbxdhIST4Wd1CtXy9DhdQB4RA">
+<span class="material-symbols-outlined text-2xl text-tertiary z-10" data-icon="description">description</span>
+<div class="absolute top-1 left-1 bg-tertiary/15 text-tertiary px-2 py-0.5 rounded-full font-label-md text-[10px] uppercase backdrop-blur-md">Paper</div>
+</div>
+<div class="flex-grow flex flex-col justify-between min-w-0">
+<div class="flex items-center gap-2 mb-1">
+<span class="font-label-md text-on-surface-variant text-xs truncate">Academic Review</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="font-label-md text-on-surface-variant text-xs">Oct 24</span>
+</div>
+<h3 class="font-headline-md text-on-surface text-[18px] line-clamp-2 leading-tight">Tonal Layering &amp; Soft Luminescence in Interfaces</h3>
+</div>
+<button class="text-on-surface-variant hover:text-tertiary transition-colors p-1">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div></article>
+<!-- Card 4 -->
+<article class="bg-surface-container-low rounded-lg border border-white/10 overflow-hidden hover:bg-surface-container transition-colors group cursor-pointer flex flex-col h-full rounded-xl">
+<div class="flex flex-row gap-4 p-3 items-center">
+<div class="w-24 h-24 shrink-0 rounded-lg overflow-hidden relative">
+<img alt="Article thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFocetx6jeQSH8ewm8d-IBUZ2rbBdTTKEItvd9VvyP-mGfflpJCOjLQ-QC8V1wHZzzRP5cju3NT6lYTpxVV09O_Gm3PAuWPurCvRmUXIm1mTKjSHrgm28UflruliPtgYEooJr1ds25tP3bDrm6T1ZGj5fQ7a9n3RkwbqFagta6b6g53pa_bCAveaW3Wl__ozcV0M2rahJnnkSZtz2FCVgwy1Sj05MHb0mFzVKVkqgcwhUZ8gop60pRZA">
+<div class="absolute top-1 left-1 bg-tertiary/15 text-tertiary px-2 py-0.5 rounded-full font-label-md text-[10px] uppercase backdrop-blur-md">Article</div>
+</div>
+<div class="flex-grow flex flex-col justify-between min-w-0">
+<div class="flex items-center gap-2 mb-1">
+<span class="font-label-md text-on-surface-variant text-xs truncate">Typography Today</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="font-label-md text-on-surface-variant text-xs">Oct 12</span>
+</div>
+<h3 class="font-headline-md text-on-surface text-[18px] line-clamp-2 leading-tight">Mastering the Fluid-Fixed Typography Scale</h3>
+</div>
+<button class="text-on-surface-variant hover:text-tertiary transition-colors p-1">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</article>
+</section>
+</main>
+<!-- BottomNavBar (from JSON) - Mobile Only -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 rounded-t-lg bg-surface-container/90 backdrop-blur-xl border-t border-white/10 shadow-lg">
+<div class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-3 pb-6">
+<!-- Inactive -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-5 py-1 hover:text-tertiary transition-colors active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="style">style</span>
+<span class="font-label-md text-label-md text-[10px]">For You</span>
+</a>
+<!-- Inactive -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-5 py-1 hover:text-tertiary transition-colors active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="explore">explore</span>
+<span class="font-label-md text-label-md text-[10px]">Explore</span>
+</a>
+<!-- Active (Saved Library Intent) -->
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-secondary-container text-on-secondary-container dark:text-on-secondary-container rounded-full px-5 py-1 hover:text-tertiary transition-colors active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined fill mb-1" data-icon="bookmark">bookmark</span>
+<span class="font-label-md text-label-md text-[10px]">Saved</span>
+</a>
+<!-- Inactive -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-5 py-1 hover:text-tertiary transition-colors active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="person">person</span>
+<span class="font-label-md text-label-md text-[10px]">Profile</span>
+</a>
+</div>
+</nav>
+<script>
+        // Optional vanilla JS for smooth scrolling or minor interactions can be added here
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                // simple ripple or click effect simulation
+            });
+        });
+    </script>
+</body></html>

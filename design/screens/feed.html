@@ -1,0 +1,215 @@
+<!DOCTYPE html><html class="dark" lang="en" style="width: 390px; height: 884px; overflow: hidden; position: relative;"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>BYOF - For You</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&amp;family=Hanken+Grotesk:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#909098",
+                        "surface-container-low": "#191c1e",
+                        "on-secondary-fixed": "#001f2a",
+                        "surface-variant": "#323537",
+                        "tertiary-fixed": "#b2ebff",
+                        "inverse-primary": "#575d78",
+                        "on-tertiary-container": "#0089a5",
+                        "surface-bright": "#363a3b",
+                        "on-error-container": "#ffdad6",
+                        "outline-variant": "#46464d",
+                        "surface": "#101415",
+                        "tertiary": "#69d4f4",
+                        "on-tertiary": "#003642",
+                        "on-surface-variant": "#c6c6ce",
+                        "surface-tint": "#bfc5e4",
+                        "on-error": "#690005",
+                        "on-secondary-fixed-variant": "#004d64",
+                        "on-tertiary-fixed-variant": "#004e5f",
+                        "error-container": "#93000a",
+                        "primary": "#bfc5e4",
+                        "primary-fixed": "#dce1ff",
+                        "error": "#ffb4ab",
+                        "secondary-fixed": "#bde9ff",
+                        "on-primary-fixed-variant": "#3f465f",
+                        "surface-container-lowest": "#0b0f10",
+                        "on-secondary": "#003546",
+                        "secondary-fixed-dim": "#93cfeb",
+                        "on-tertiary-fixed": "#001f27",
+                        "on-surface": "#e0e3e5",
+                        "surface-container-highest": "#323537",
+                        "surface-dim": "#101415",
+                        "inverse-on-surface": "#2d3133",
+                        "on-primary": "#292f48",
+                        "on-primary-container": "#767c99",
+                        "on-primary-fixed": "#141a32",
+                        "secondary-container": "#01526a",
+                        "primary-fixed-dim": "#bfc5e4",
+                        "primary-container": "#0a1128",
+                        "surface-container": "#1d2022",
+                        "background": "#101415",
+                        "tertiary-fixed-dim": "#69d4f4",
+                        "inverse-surface": "#e0e3e5",
+                        "secondary": "#93cfeb",
+                        "on-background": "#e0e3e5",
+                        "on-secondary-container": "#88c4e0",
+                        "surface-container-high": "#272a2c",
+                        "tertiary-container": "#00151b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-padding": "24px",
+                        "unit": "8px",
+                        "section-gap": "80px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Playfair Display"],
+                        "headline-md": ["Playfair Display"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "display-lg": ["Playfair Display"],
+                        "label-md": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Playfair Display"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["40px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg": ["64px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "1.4", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background h-screen w-screen overflow-hidden font-body-md relative antialiased selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- Desktop Top Nav Shell -->
+<header class="hidden md:flex justify-between items-center px-container-padding py-4 w-full max-w-[1280px] mx-auto bg-background dark:bg-background top-0 sticky z-50">
+<button class="text-primary dark:text-primary hover:opacity-80 transition-opacity scale-95 transition-transform duration-200 p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-primary">
+<span class="material-symbols-outlined text-3xl">menu</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary tracking-tight font-bold">BYOF</h1>
+<button class="w-10 h-10 rounded-full overflow-hidden hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-primary border border-surface-variant">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A close up, cinematic portrait of a professional individual serving as a user profile avatar. The subject is softly lit with dramatic shadows, set against a dark, minimalist background. The style is premium, refined, and sophisticated, reflecting an editorial aesthetic suitable for a high-end application interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHhmpfpEsxrUgOfs36_dSjak34F9H_BhKErl0lQDIY6Wyb4Bon9YUcNCyNrgDrK1WwaqWyf-IGYEQSi2Qrq4EeolrbyvkXoF_dsvq_R1DXlyEHKii_R1TVj67vVpJRxkkOKNiqTaMYyPEl-maC7x6OWWiYR7Ar5OWswCinIog4Cf0n3V_rlHzg_DqVBSeXXSrzOvZLRgP6YtUuz2pFP4VEq4FWm1RHcj1cLgkmSNYB0lTIh-qmNKsA_Q">
+</button>
+</header>
+<!-- Main Content Area - Full Screen Feed -->
+<main class="h-full w-full relative">
+<!-- Image Canvas -->
+<div class="absolute inset-0 z-0">
+<img alt="Editorial Content" class="w-full h-full object-cover object-center" data-alt="A breathtaking, wide-angle architectural shot of a minimalist modern building exterior at twilight. The structure features sweeping curves of concrete and glass, reflecting soft ambient light from interior spaces. The sky is a deep, velvety indigo with subtle gradient transitions. The overall aesthetic is extremely high-end, editorial, and sophisticated, perfectly suited for a dark-themed luxury application background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPVlTgf_J5YXxZbIdA6zylbAU8rNHSMNDstF7XNzNfBBxPhi0F4i6Z7UvkC-UqTpX57AzDNGBBSgOCo1aghhLNpDWXZ0kaAFuD9EEEEhYsufUnPwfNOjOx22xnFTuZQrIvVxRb91dHECa40DWHV0UJquZ0Cf5HPn4PmPaRJWZ2UioQmqrhwiMmeu6mROTt90T3QdbXojCxB3i_Y1f0cKG4KpLY243fTyLmuygGyoM7NQbGRpAlmeYqmQ">
+<!-- Gradient Overlay for readability -->
+<div class="absolute inset-0 bg-gradient-to-t from-primary-container/95 via-primary-container/40 to-transparent"></div>
+<!-- Vignette -->
+<div class="absolute inset-0 bg-black/20"></div>
+</div>
+<!-- Content Overlay -->
+<div class="absolute inset-0 z-10 flex flex-col justify-end px-container-padding pb-32 md:pb-24 max-w-[1280px] mx-auto pointer-events-none">
+<div class="pointer-events-auto max-w-2xl">
+<!-- Meta Info -->
+<div class="flex items-center gap-3 mb-4">
+<span class="font-label-md text-label-md bg-secondary-container/80 text-secondary backdrop-blur-md px-4 py-1.5 rounded-full border border-secondary/20 uppercase tracking-widest text-xs">Architecture</span>
+<div class="w-1 h-1 rounded-full bg-on-surface-variant"></div>
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-xs">8 Min Read</span>
+</div>
+<!-- Title -->
+<p class="font-body-lg text-body-lg text-on-background/90 mb-2 max-w-md line-clamp-3">A deep dive into how modern architects are softening the harsh edges of brutalist design with organic textures and fluid geometry.</p><h2 class="font-headline-lg text-headline-lg text-on-background mb-4 drop-shadow-lg leading-tight">The Soft Brutalism Revival</h2>
+<!-- Source & Excerpt -->
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center overflow-hidden shrink-0">
+<span class="font-headline-md text-headline-md text-primary">W</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-background">Wired Magazine</p>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-1">Exploring the fluid intersection of concrete and organic form.</p>
+</div>
+</div>
+<!-- Action Buttons Row -->
+<div class="flex items-center gap-4">
+<button class="bg-secondary text-primary-container font-label-md text-label-md px-8 py-4 rounded-full hover:opacity-90 transition-opacity active:scale-95 flex items-center gap-2"><span class="">View Content</span><span class="material-symbols-outlined text-xl">play_arrow</span></button>
+<div class="fixed right-4 bottom-32 md:bottom-24 flex flex-col gap-4 z-30 pointer-events-auto">
+<div class="flex flex-col gap-4 bg-surface-container/60 backdrop-blur-xl p-2 rounded-full border border-white/5">
+<button aria-label="Like" class="w-12 h-12 rounded-full flex flex-col items-center justify-center text-on-background hover:bg-surface-variant/50 transition-colors active:scale-90 group">
+<span class="material-symbols-outlined group-hover:text-error transition-colors">favorite</span>
+<span class="text-[10px] font-label-md">2.4k</span>
+</button>
+<button aria-label="Save" class="w-12 h-12 rounded-full flex flex-col items-center justify-center text-on-background hover:bg-surface-variant/50 transition-colors active:scale-90 group">
+<span class="material-symbols-outlined group-hover:text-secondary transition-colors">bookmark</span>
+<span class="text-[10px] font-label-md">Save</span>
+</button>
+<button aria-label="Share" class="w-12 h-12 rounded-full flex flex-col items-center justify-center text-on-background hover:bg-surface-variant/50 transition-colors active:scale-90">
+<span class="material-symbols-outlined">share</span>
+<span class="text-[10px] font-label-md">Share</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Vertical Pagination Dots (Desktop) -->
+<div class="hidden md:flex absolute right-8 top-1/2 -translate-y-1/2 flex-col gap-3 z-20">
+<div class="w-2 h-12 bg-secondary rounded-full"></div>
+<div class="w-2 h-2 bg-surface-variant rounded-full hover:bg-secondary/50 transition-colors cursor-pointer"></div>
+<div class="w-2 h-2 bg-surface-variant rounded-full hover:bg-secondary/50 transition-colors cursor-pointer"></div>
+<div class="w-2 h-2 bg-surface-variant rounded-full hover:bg-secondary/50 transition-colors cursor-pointer"></div>
+</div>
+</main>
+<!-- Mobile Bottom Nav Shell -->
+<header class="md:hidden fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-padding py-4 bg-background/80 backdrop-blur-md border-b border-white/5">
+<button class="text-primary p-2 rounded-full focus:outline-none">
+<span class="material-symbols-outlined text-2xl">menu</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary tracking-tight font-bold">BYOF</h1>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-surface-variant">
+<img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHhmpfpEsxrUgOfs36_dSjak34F9H_BhKErl0lQDIY6Wyb4Bon9YUcNCyNrgDrK1WwaqWyf-IGYEQSi2Qrq4EeolrbyvkXoF_dsvq_R1DXlyEHKii_R1TVj67vVpJRxkkOKNiqTaMYyPEl-maC7x6OWWiYR7Ar5OWswCinIog4Cf0n3V_rlHzg_DqVBSeXXSrzOvZLRgP6YtUuz2pFP4VEq4FWm1RHcj1cLgkmSNYB0lTIh-qmNKsA_Q">
+</div>
+</header><nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-6 bg-surface-container/80 dark:bg-surface-container/80 backdrop-blur-xl">
+<button class="flex flex-col items-center justify-center text-secondary font-bold hover:text-primary transition-colors active:scale-90 transition-all duration-300 w-16 group">
+<div class="relative">
+<span class="material-symbols-outlined text-2xl icon-filled mb-1 group-hover:scale-110 transition-transform">auto_awesome</span>
+<div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-secondary rounded-full"></div>
+</div>
+<span class="font-label-md text-[10px] mt-1 text-secondary">For You</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors active:scale-90 transition-all duration-300 w-16 group">
+<span class="material-symbols-outlined text-2xl mb-1 group-hover:scale-110 transition-transform">explore</span>
+<span class="font-label-md text-[10px] mt-1 opacity-80 group-hover:opacity-100">Explore</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors active:scale-90 transition-all duration-300 w-16 group">
+<span class="material-symbols-outlined text-2xl mb-1 group-hover:scale-110 transition-transform">bookmark</span>
+<span class="font-label-md text-[10px] mt-1 opacity-80 group-hover:opacity-100">Saved</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors active:scale-90 transition-all duration-300 w-16 group">
+<span class="material-symbols-outlined text-2xl mb-1 group-hover:scale-110 transition-transform">person</span>
+<span class="font-label-md text-[10px] mt-1 opacity-80 group-hover:opacity-100">Profile</span>
+</button>
+</nav>
+
+
+<div id="snapdom-sandbox" data-snapdom-sandbox="true" aria-hidden="true" style="position: absolute; left: -9999px; top: -9999px; width: 0px; height: 0px; overflow: hidden;"></div></body></html>
