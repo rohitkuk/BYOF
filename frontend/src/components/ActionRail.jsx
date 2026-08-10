@@ -22,7 +22,7 @@ export function ActionRail({ item, onSignal }) {
   return (
     <div style={{
       position: 'fixed', right: '16px',
-      bottom: 'calc(var(--bottom-nav-height) + 80px)',
+      bottom: 'calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px) + 80px)',
       display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'center',
       zIndex: 40,
       background: 'rgba(29,32,34,0.65)',

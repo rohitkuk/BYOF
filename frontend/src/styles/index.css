@@ -48,8 +48,8 @@
   --gutter:                 16px;
 
   /* Layout */
-  --top-bar-height:         64px;
-  --bottom-nav-height:      76px;
+  --top-bar-height:         56px;
+  --bottom-nav-height:      60px;
 
   /* Components */
   --action-btn-bg:          rgba(255,255,255,0.10);

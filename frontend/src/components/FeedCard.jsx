@@ -1,12 +1,24 @@
+import { useState } from 'react'
+
 export function FeedCard({ item, skipped = false, cardRef }) {
+  const [opening, setOpening] = useState(false)
+
   let domain = ''
   try { domain = new URL(item.url).hostname.replace('www.', '') } catch (_) {}
   const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=32`
 
+  const openLink = (e) => {
+    e.stopPropagation()
+    setOpening(true)
+    setTimeout(() => {
+      window.open(item.url, '_blank', 'noopener,noreferrer')
+      setOpening(false)
+    }, 180)
+  }
+
   return (
     <section
       ref={cardRef}
-      onClick={() => window.open(item.url, '_blank', 'noopener,noreferrer')}
       style={cardStyle}
     >
       {/* Background image or fallback gradient */}
@@ -38,9 +50,9 @@ export function FeedCard({ item, skipped = false, cardRef }) {
       {/* Content overlay — category + title */}
       <div style={{
         position: 'absolute',
-        bottom: 'calc(var(--bottom-nav-height) + 72px)',
+        bottom: 'calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px) + 72px)',
         left: '24px', right: '80px',
-        zIndex: 10, pointerEvents: 'none',
+        zIndex: 10,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
           {(item.categories || []).map(cat => (
@@ -52,13 +64,22 @@ export function FeedCard({ item, skipped = false, cardRef }) {
             </span>
           )}
         </div>
-        <h2 style={titleStyle}>{item.title}</h2>
+        <h2
+          onClick={openLink}
+          style={{
+            ...titleStyle,
+            cursor: 'pointer',
+            opacity: opening ? 0.55 : 1,
+            transform: opening ? 'scale(0.985)' : 'scale(1)',
+            transition: 'opacity 180ms ease, transform 180ms ease',
+          }}
+        >{item.title}</h2>
       </div>
 
       {/* Meta bar — source + read button */}
       <div style={{
         position: 'absolute',
-        bottom: 'calc(var(--bottom-nav-height) + 14px)',
+        bottom: 'calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px) + 14px)',
         left: '24px', right: '80px',
         zIndex: 10,
         display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px',
@@ -73,8 +94,12 @@ export function FeedCard({ item, skipped = false, cardRef }) {
           <span style={dimStyle}>&nbsp;·&nbsp;{item.published_at}</span>
         </div>
         <button
-          onClick={e => { e.stopPropagation(); window.open(item.url, '_blank', 'noopener,noreferrer') }}
-          style={readBtnStyle}
+          onClick={openLink}
+          style={{
+            ...readBtnStyle,
+            opacity: opening ? 0.55 : 1,
+            transition: 'opacity 180ms ease',
+          }}
         >
           READ ↗
         </button>
@@ -85,11 +110,10 @@ export function FeedCard({ item, skipped = false, cardRef }) {
 
 const cardStyle = {
   position: 'relative',
-  height: '100vh',
+  height: '100dvh',
   scrollSnapAlign: 'start',
   overflow: 'hidden',
   flexShrink: 0,
-  cursor: 'pointer',
 }
 
 const pillStyle = {

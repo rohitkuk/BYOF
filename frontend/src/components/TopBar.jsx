@@ -10,17 +10,13 @@ export function TopBar({ view, onNavigate }) {
           position: 'fixed', top: 0, left: 0, right: 0,
           height: 'var(--top-bar-height)', zIndex: 50,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '0 var(--container-padding)',
+          padding: '0 16px',
           background: 'rgba(16,20,21,0.85)',
           backdropFilter: 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
           borderBottom: '1px solid rgba(255,255,255,0.05)',
         }}
       >
-        <button aria-label="Menu" style={iconBtnStyle}>
-          <span className="material-symbols-outlined" style={{ fontSize: '24px', color: 'var(--primary)' }}>menu</span>
-        </button>
-
         <button
           onClick={() => onNavigate('feed')}
           style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
@@ -54,11 +50,7 @@ export function TopBar({ view, onNavigate }) {
           height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '0 var(--container-padding)',
         }}>
-        {/* Left: hamburger + wordmark */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <button aria-label="Menu" style={iconBtnStyle}>
-            <span className="material-symbols-outlined" style={{ fontSize: '24px', color: 'var(--text-muted)' }}>menu</span>
-          </button>
+        <div>
           <button
             onClick={() => onNavigate('feed')}
             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
@@ -120,13 +112,6 @@ const wordmarkStyle = {
   fontSize: '20px', fontWeight: 700,
   color: 'var(--primary)',
   letterSpacing: '0.08em',
-}
-
-const iconBtnStyle = {
-  background: 'none', border: 'none', cursor: 'pointer',
-  padding: '8px', borderRadius: '50%',
-  display: 'flex', alignItems: 'center', justifyContent: 'center',
-  transition: 'opacity 200ms',
 }
 
 const avatarBtnStyle = {
