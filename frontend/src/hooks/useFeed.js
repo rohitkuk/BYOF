@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
-const BASE = 'http://localhost:8000'
+const BASE = ''
 
 export function useFeed(filters = {}) {
   const [items, setItems] = useState([])

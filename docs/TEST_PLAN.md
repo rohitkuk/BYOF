@@ -26,7 +26,7 @@ These apply on every page. Test first.
 
 | # | Check | Expected | Result |
 |---|-------|----------|--------|
-| G-01 | Page background | `#101415` — no pure black, no off-white | `[ ]` |
+| G-01 | Page background | `#101415` on Feed/Explore/Saved/Profile — exception: Landing uses `#0a1128` | `[ ]` |
 | G-02 | No undeclared colors | Only tokens from DESIGN.md: primary `#bfc5e4`, secondary `#93cfeb`, tertiary `#69d4f4`, surfaces, text, outlines | `[ ]` |
 | G-03 | No coral, no orange, no bright white (#fff) on text | Inspect all colored elements | `[ ]` |
 | G-04 | Glacier Blue (#93cfeb) on interactive/active elements | Like active, nav active, Apply buttons | `[ ]` |
@@ -106,6 +106,7 @@ These apply on every page. Test first.
 | T-24 | Desktop: click Saved → saved | Saved page renders | `[ ]` |
 | T-25 | Desktop: click Profile → profile | Profile page renders | `[ ]` |
 | T-26 | Active link updates on view change | When navigating via bottom nav, desktop active link also updates | `[ ]` |
+| T-27 | Hamburger button — no-op in V1 | Tapping `menu` icon does nothing (no drawer, no crash, no console error) | `[ ]` |
 
 ---
 
@@ -342,7 +343,7 @@ These apply on every page. Test first.
 |---|-------|----------|--------|
 | E-41 | Content type: tap All → clears type filter | `selectedType = null` | `[ ]` |
 | E-42 | Content type: tap Articles → selects | `selectedType = 'Articles'` — segment glows | `[ ]` |
-| E-43 | Content type: tap same again → no deselect | Single select — can deselect only via All | `[ ]` |
+| E-43 | Content type: tap same again → deselects (returns to All) | `selectedType` toggles to `null` — same tap twice = clear | `[ ]` |
 | E-44 | Content type: tap different → switches | Only one active at a time | `[ ]` |
 | E-45 | Topics: tap pill → activates (tertiary glow) | `selectedTopics` includes topic | `[ ]` |
 | E-46 | Topics: tap active pill → deactivates | Removed from array | `[ ]` |
@@ -512,6 +513,8 @@ These apply on every page. Test first.
 | P-28 | Preferences load from API | GET /preferences called; categories/subcategories shown as pills | `[ ]` |
 | P-29 | Loading state | "Loading…" text while fetching | `[ ]` |
 | P-30 | Edit button present | Visible on avatar — non-functional in V1 | `[ ]` |
+| P-31 | Saved count reflects signals | "Saved" stat = count of items where `signals[url].saved === true` | `[ ]` |
+| P-32 | Liked count reflects signals | "Liked" stat = count of items where `signals[url].liked === true` | `[ ]` |
 
 ---
 
@@ -587,6 +590,8 @@ These apply on every page. Test first.
 | R-05 | Explore page: 2-col grid on desktop, 1-col on mobile | `.explore-left` grid-column 1/9 on desktop | `[ ]` |
 | R-06 | Feed card: 100vh on both | No size change at breakpoint | `[ ]` |
 | R-07 | Tablet 768px: edge case | Correct breakpoint, no layout bleed | `[ ]` |
+| R-08 | Landing: mobile wordmark size | `clamp(32px, 5vw, 40px)` — resolves to ~32px on 390px screen | `[ ]` |
+| R-09 | Landing: sign-in button width | Mobile: full width (100%); desktop: `min-width: 280px` auto-sized | `[ ]` |
 
 ---
 
@@ -606,16 +611,20 @@ These apply on every page. Test first.
 | X-10 | Console errors | Zero console errors on all pages | `[ ]` |
 | X-11 | No undeclared colors in DevTools | Computed color inspector shows only Glacier hex values | `[ ]` |
 | X-12 | Font rendering | All fonts anti-aliased, no fallback fonts rendered | `[ ]` |
+| X-13 | Landing ambient image fails to load | No broken-image icon (alt=""), background color `#0a1128` still renders, gradient still shows | `[ ]` |
+| X-14 | Rapid sign-in clicks | Click "Sign in with Google" multiple times — localStorage set once, no double-render or crash | `[ ]` |
 
 ---
 
 ## HOW TO RUN
 
-1. Open http://localhost:5173 in Chrome, set device to iPhone 12 Pro (390×844) in DevTools
-2. Run through each section above, marking `[P]` / `[F]` / `[S]`
-3. For `[F]` items: note exact delta (e.g. "color is #888 not #909098" or "padding 12px not 16px")
-4. Switch to desktop 1280px for responsive tests (sections 1.2, 3.7, 4.7, 9)
-5. Open DevTools Computed tab to verify exact CSS values for color/font/spacing checks
+1. **Before starting:** DevTools → Application → Local Storage → delete `byof_signed_in` (ensures landing page shows)
+2. Open http://localhost:5173 in Chrome, set device to iPhone 12 Pro (390×844) in DevTools
+3. Run section 7 (Landing) first while unauthenticated; click sign-in to enter the app
+4. Run sections 0–6, 8–10 in the app shell
+5. For `[F]` items: note exact delta (e.g. "color is #888 not #909098" or "padding 12px not 16px")
+6. Switch to desktop 1280px for responsive tests (sections 1.2, 3.7, 4.7, 9)
+7. Open DevTools Computed tab to verify exact CSS values for color/font/spacing checks
 
 ## FAIL RESOLUTION PRIORITY
 
