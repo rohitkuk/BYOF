@@ -1,3 +1,4 @@
+import json
 import sqlite3
 from datetime import datetime
 from email.utils import parsedate_to_datetime
@@ -22,8 +23,8 @@ def rank(db_path: str, prefs_path: str = "preferences.json", limit: int | None =
     conn.row_factory = sqlite3.Row
     rows = conn.execute(
         """SELECT title, url, source, published_at, fetched_at,
-                  image_url, image_type,
-                  json_extract(raw, '$.summary') as summary,
+                  image_url, image_type, llm_score, llm_summary, llm_keywords,
+                  json_extract(raw, '$.summary') as rss_summary,
                   json_extract(raw, '$.source.href') as source_href
            FROM items"""
     ).fetchall()
@@ -34,7 +35,15 @@ def rank(db_path: str, prefs_path: str = "preferences.json", limit: int | None =
     for item in items:
         recency = _parse_ts(item["published_at"], item["fetched_at"])
         weight = item.pop("_weight", 1.0)
-        item["_score"] = recency * weight
+        llm_score = item.get("llm_score")
+        if llm_score is not None:
+            item["_score"] = recency * float(llm_score) * 10
+            item["llm_scored"] = True
+        else:
+            item["_score"] = recency * weight
+            item["llm_scored"] = False
+        item["summary"] = item.get("llm_summary") or item.get("rss_summary") or ""
+        item["keywords"] = json.loads(item.get("llm_keywords") or "[]")
 
     items.sort(key=lambda x: x["_score"], reverse=True)
     for item in items:

@@ -1,19 +1,37 @@
 import json
 import os
+import time as _time
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 import uvicorn
-from fastapi import FastAPI, Query
+from fastapi import BackgroundTasks, FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from agents.aggregation import rank
+from agents.swarm import run_swarm
 from connectors.arxiv import fetch as fetch_arxiv
 from connectors.google_news import fetch as fetch_google_news
 from connectors.mit_tech_review import fetch as fetch_mit
 from connectors.techcrunch import fetch as fetch_techcrunch
 from connectors.tldr_tech import fetch as fetch_tldr
-from db.store import init_db, refresh_article_images, refresh_publisher_logos, save_items
+from db.store import (
+    get_recent_runs,
+    init_db,
+    refresh_article_images,
+    refresh_direct_images,
+    refresh_publisher_logos,
+    save_items,
+    save_llm_results,
+    save_refresh_run,
+)
 
 DB_PATH = "db/byof.db"
 PREFS_PATH = "preferences.json"
@@ -34,7 +52,23 @@ _SOURCE_TYPE = {
     "ArXiv": "Paper",
 }
 
+Path("frontend/public/screenshots").mkdir(parents=True, exist_ok=True)
+
+# In-memory refresh state — tracks running/last-completed job
+_refresh_state: dict = {"status": "idle", "last": None}
+
+# Feed cache — unfiltered /feed responses, 30s TTL
+_feed_cache: dict = {"data": None, "ts": 0.0}
+_FEED_CACHE_TTL = 30
+
+
+def _invalidate_feed_cache():
+    _feed_cache["data"] = None
+    _feed_cache["ts"] = 0.0
+
+
 app = FastAPI()
+app.add_middleware(GZipMiddleware, minimum_size=500)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
@@ -89,6 +123,9 @@ def _shape_item(item: dict) -> dict:
         "categories": _SOURCE_CATEGORY.get(item.get("source", ""), []),
         "score": round(item.get("score", 0.0), 4),
         "read_time": max(1, len(title.split()) // 3),
+        "summary": item.get("summary") or "",
+        "keywords": (item.get("keywords") or [])[:5],
+        "llm_scored": item.get("llm_scored", False),
     }
 
 
@@ -119,6 +156,13 @@ def get_feed(
     type: str | None = Query(default=None),
     source: str | None = Query(default=None),
 ):
+    has_filters = any([category, date, type, source])
+
+    if not has_filters:
+        now_ts = _time.time()
+        if _feed_cache["data"] is not None and (now_ts - _feed_cache["ts"]) < _FEED_CACHE_TTL:
+            return _feed_cache["data"]
+
     items = rank(DB_PATH, PREFS_PATH, limit=None)
 
     if source:
@@ -144,24 +188,83 @@ def get_feed(
             ]
 
     shaped = [_shape_item(i) for i in items[:20]]
+
+    if not has_filters:
+        _feed_cache["data"] = shaped
+        _feed_cache["ts"] = _time.time()
+
     return shaped
 
 
+_SOURCE_LIMIT = 12   # items fetched per connector per refresh
+_SWARM_LIMIT = 60    # max items sent to LLM swarm per refresh
+
+
+def _do_refresh():
+    _refresh_state["status"] = "running"
+    try:
+        conn = init_db(DB_PATH)
+        all_items = (
+            fetch_google_news()[:_SOURCE_LIMIT]
+            + fetch_techcrunch()[:_SOURCE_LIMIT]
+            + fetch_arxiv()[:_SOURCE_LIMIT]
+            + fetch_mit()[:_SOURCE_LIMIT]
+            + fetch_tldr()[:_SOURCE_LIMIT]
+        )
+        new_count = save_items(conn, all_items)
+        refresh_article_images(conn, use_playwright=False)
+        refresh_direct_images(conn)
+        refresh_publisher_logos(conn)
+
+        rows = conn.execute(
+            "SELECT title, url, source, published_at FROM items "
+            "WHERE llm_score IS NULL ORDER BY fetched_at DESC LIMIT ?",
+            (_SWARM_LIMIT,),
+        ).fetchall()
+        unscored = [{"title": r[0], "url": r[1], "source": r[2], "published_at": r[3]} for r in rows]
+        swarm = run_swarm(unscored, PREFS_PATH)
+        save_llm_results(conn, swarm.results)
+        run_record = {
+            "run_at": datetime.now(timezone.utc).isoformat(),
+            "item_count": len(all_items),
+            "scored_count": len(swarm.results),
+            "input_tokens": swarm.total_input_tokens,
+            "output_tokens": swarm.total_output_tokens,
+            "failure_count": swarm.failure_count,
+        }
+        save_refresh_run(conn, run_record)
+        conn.close()
+        _invalidate_feed_cache()
+        _refresh_state["last"] = {
+            **run_record,
+            "new_items": new_count,
+            "status": "ok",
+        }
+    except Exception as e:
+        _refresh_state["last"] = {"status": "error", "error": str(e)}
+    finally:
+        _refresh_state["status"] = "idle"
+
+
 @app.post("/refresh")
-def post_refresh():
+def post_refresh(background_tasks: BackgroundTasks):
+    if _refresh_state["status"] == "running":
+        return {"status": "already_running"}
+    background_tasks.add_task(_do_refresh)
+    return {"status": "started"}
+
+
+@app.get("/refresh/status")
+def get_refresh_status():
+    return {"status": _refresh_state["status"], "last": _refresh_state["last"]}
+
+
+@app.get("/runs")
+def get_runs():
     conn = init_db(DB_PATH)
-    all_items = (
-        fetch_google_news()
-        + fetch_techcrunch()
-        + fetch_arxiv()
-        + fetch_mit()
-        + fetch_tldr()
-    )
-    new_count = save_items(conn, all_items)
-    refresh_article_images(conn, use_playwright=False)
-    refresh_publisher_logos(conn)
+    runs = get_recent_runs(conn)
     conn.close()
-    return {"status": "ok", "new_items": new_count}
+    return runs
 
 
 if __name__ == "__main__":
