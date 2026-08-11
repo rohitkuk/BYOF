@@ -19,31 +19,25 @@ export default function App() {
   const [signals, setSignals] = useState({})
   const [filters, setFilters] = useState({})
 
-  const handleSignIn = () => {
-    localStorage.setItem('byof_signed_in', '1')
-    setSignedIn(true)
-  }
-
-  if (!signedIn) {
-    return <LandingPage onSignIn={handleSignIn} />
-  }
-
+  // All hooks must be called unconditionally — before any early return
   const { items, loading, error } = useFeed(filters)
   const cardRefs = useRef([])
 
   useEffect(() => {
     if (!items.length) return
-    const observers = []
-    cardRefs.current.forEach((el, i) => {
-      if (!el) return
-      const obs = new IntersectionObserver(
-        ([entry]) => { if (entry.isIntersecting) setActiveIndex(i) },
-        { threshold: 0.5 }
-      )
-      obs.observe(el)
-      observers.push(obs)
-    })
-    return () => observers.forEach(o => o.disconnect())
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const i = parseInt(entry.target.dataset.cardIndex, 10)
+            if (!isNaN(i)) setActiveIndex(i)
+          }
+        })
+      },
+      { threshold: 0.5 }
+    )
+    cardRefs.current.forEach(el => { if (el) obs.observe(el) })
+    return () => obs.disconnect()
   }, [items])
 
   const handleSignal = useCallback((url, state) => {
@@ -54,6 +48,15 @@ export default function App() {
     setFilters(newFilters)
     setView('feed')
   }, [])
+
+  const handleSignIn = () => {
+    localStorage.setItem('byof_signed_in', '1')
+    setSignedIn(true)
+  }
+
+  if (!signedIn) {
+    return <LandingPage onSignIn={handleSignIn} />
+  }
 
   const savedItems = items.filter(i => signals[i.url]?.saved)
   const activeItem = items[activeIndex]
@@ -97,6 +100,8 @@ export default function App() {
                   <FeedCard
                     key={item.url}
                     item={item}
+                    index={i}
+                    loadImage={i >= activeIndex - 1 && i <= activeIndex + 3}
                     skipped={signals[item.url]?.skipped}
                     cardRef={el => { cardRefs.current[i] = el }}
                   />

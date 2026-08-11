@@ -1,4 +1,6 @@
-export function ProgressDots({ total, current }) {
+import { memo } from 'react'
+
+export const ProgressDots = memo(function ProgressDots({ total, current }) {
   const capped = Math.min(total, 30)
   return (
     <div
@@ -26,4 +28,4 @@ export function ProgressDots({ total, current }) {
       ))}
     </div>
   )
-}
+})

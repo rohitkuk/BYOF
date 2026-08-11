@@ -32,17 +32,27 @@ Working curated feed from Phase 1 sources, weighted, ranked, filterable.
   7. ✅ Add TechCrunch connector
   8. ✅ Add remaining Phase 1 connectors (Papers with Code, The Rundown AI newsletter)
 
-### V2 — Item-level swarm
-Same feed, but scoring happens per content item instead of per feed batch.
-- Agents: one short-lived agent per content item (20–200+/day, dynamic)
-- Skill: concurrency control, worker pools, rate limiting, partial-failure handling,
-  per-run cost tracking
+### V2 — Item-level swarm *(current)*
+Per-item content fetch + LLM scoring. Each item gets its own short-lived Claude agent.
+- Agents: one per content item (20–200+/day, concurrent pool of 5)
+- Skill: concurrency control, worker pools, partial-failure handling, per-run cost tracking
+- Slices:
+  1. ✅ `uv add anthropic` — Anthropic SDK added
+  2. ✅ `db/store.py` — 6 new columns (body, llm_summary, llm_keywords, llm_categories, llm_score, scored_at) + refresh_runs table
+  3. ✅ `agents/content_fetcher.py` — full page text + og:image + Playwright screenshot fallback
+  4. ✅ `agents/item_scorer.py` — Claude Haiku per-item scorer (summary + keywords + categories + score)
+  5. ✅ `agents/swarm.py` — ThreadPoolExecutor orchestrator with failure isolation + token tracking
+  6. ✅ `agents/aggregation.py` — LLM score path (recency × llm_score × 10) with V1 keyword fallback
+  7. ✅ `api.py` — /refresh wired to swarm, /runs endpoint added, /feed includes summary + llm_scored
+  8. ✅ `app.py` — swarm wired into CLI with cost summary print
 
 ### V3 — Persona twins
 Feed reflects multiple facets of taste (researcher / generalist / hands-on engineer
 lenses), toggleable.
 - Agents: V2 item-agents + 3–5 persona agents scoring the same pool independently
 - Skill: running many agents over identical input with independent judgments
+- Planned: mind map — cross-article relationship graph, topic clustering from llm_keywords
+- Planned: over-time preference learning — persist like/save/skip signals to backend, drift scoring weights
 
 ### V4 — Consensus jury
 Top rankings come with a visible "why this beat that" — agents disagree, a judge resolves.
@@ -57,4 +67,4 @@ automatically, within a budget.
 
 ## Status
 
-Current slice: **Slice 7** — TechCrunch connector (already complete; next is V2 planning).
+Current: **V2 complete** — item-level swarm with LLM scoring live. Next: V3 planning.

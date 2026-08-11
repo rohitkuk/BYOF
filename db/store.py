@@ -26,6 +26,8 @@ _PUB_SUFFIX_RE = re.compile(r'\s*[-|–—]\s*\w[\w\s&.]*$')
 
 def init_db(db_path: str) -> sqlite3.Connection:
     conn = sqlite3.connect(db_path)
+    conn.execute("PRAGMA journal_mode=WAL")
+    conn.execute("PRAGMA synchronous=NORMAL")
     conn.execute("""
         CREATE TABLE IF NOT EXISTS items (
             id           INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -44,15 +46,36 @@ def init_db(db_path: str) -> sqlite3.Connection:
             fetched_at  TEXT NOT NULL
         )
     """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS refresh_runs (
+            id            INTEGER PRIMARY KEY AUTOINCREMENT,
+            run_at        TEXT NOT NULL,
+            item_count    INTEGER,
+            scored_count  INTEGER,
+            input_tokens  INTEGER,
+            output_tokens INTEGER,
+            failure_count INTEGER
+        )
+    """)
     for col, definition in [
         ("image_url", "TEXT"),
         ("image_type", "TEXT"),
         ("article_url", "TEXT"),
+        ("body", "TEXT"),
+        ("llm_summary", "TEXT"),
+        ("llm_keywords", "TEXT"),
+        ("llm_categories", "TEXT"),
+        ("llm_score", "REAL"),
+        ("scored_at", "TEXT"),
     ]:
         try:
             conn.execute(f"ALTER TABLE items ADD COLUMN {col} {definition}")
         except Exception:
             pass
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_items_llm_score ON items(llm_score)")
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_items_fetched_at ON items(fetched_at DESC)")
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_items_source ON items(source)")
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_items_published_at ON items(published_at)")
     conn.commit()
     return conn
 
@@ -285,6 +308,91 @@ def _fetch_logo_url(source_href: str) -> str | None:
         if _url_ok(icon_url):
             return icon_url
     return None
+
+
+def refresh_direct_images(
+    conn: sqlite3.Connection,
+    max_workers: int = 8,
+    timeout: int = 12,
+) -> int:
+    """Fetch og:image directly from item.url for every item still missing an image.
+    Skips news.google.com URLs (those require Playwright to resolve the redirect).
+    Returns number of items updated."""
+    rows = conn.execute(
+        "SELECT id, url FROM items WHERE image_url IS NULL AND url NOT LIKE '%news.google.com%'"
+    ).fetchall()
+
+    def fetch_one(row):
+        item_id, url = row
+        try:
+            r = requests.get(
+                url, timeout=timeout, headers={"User-Agent": _UA}, allow_redirects=True
+            )
+            if r.status_code != 200:
+                return None
+            og = _og_image_from_html(r.text[:300_000], url)
+            if og:
+                return (item_id, og)
+        except Exception:
+            pass
+        return None
+
+    updated = 0
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {executor.submit(fetch_one, row): row for row in rows}
+        for future in as_completed(futures):
+            try:
+                result = future.result()
+                if result:
+                    item_id, og = result
+                    conn.execute(
+                        "UPDATE items SET image_url = ?, image_type = 'article' WHERE id = ?",
+                        (og, item_id),
+                    )
+                    updated += 1
+            except Exception:
+                pass
+    conn.commit()
+    return updated
+
+
+def save_llm_results(conn: sqlite3.Connection, results: list[dict]) -> None:
+    if not results:
+        return
+    conn.executemany(
+        """UPDATE items SET
+               body           = :body,
+               image_url      = COALESCE(image_url, :image_url),
+               image_type     = COALESCE(image_type, :image_type),
+               llm_summary    = :llm_summary,
+               llm_keywords   = :llm_keywords,
+               llm_categories = :llm_categories,
+               llm_score      = :llm_score,
+               scored_at      = :scored_at
+           WHERE url = :url""",
+        results,
+    )
+    conn.commit()
+
+
+def save_refresh_run(conn: sqlite3.Connection, run: dict) -> None:
+    conn.execute(
+        """INSERT INTO refresh_runs
+               (run_at, item_count, scored_count, input_tokens, output_tokens, failure_count)
+           VALUES (:run_at, :item_count, :scored_count, :input_tokens, :output_tokens, :failure_count)""",
+        run,
+    )
+    conn.commit()
+
+
+def get_recent_runs(conn: sqlite3.Connection, limit: int = 10) -> list[dict]:
+    cursor = conn.execute(
+        "SELECT id, run_at, item_count, scored_count, input_tokens, output_tokens, failure_count "
+        "FROM refresh_runs ORDER BY id DESC LIMIT ?",
+        (limit,),
+    )
+    cols = [d[0] for d in cursor.description]
+    return [dict(zip(cols, row)) for row in cursor.fetchall()]
 
 
 def refresh_publisher_logos(conn: sqlite3.Connection, verbose: bool = False) -> int:
