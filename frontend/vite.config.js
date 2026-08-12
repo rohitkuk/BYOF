@@ -35,6 +35,7 @@ export default defineConfig({
       '/refresh':     { target: 'http://127.0.0.1:8000', changeOrigin: true },
       '/runs':        { target: 'http://127.0.0.1:8000', changeOrigin: true },
       '/health':      { target: 'http://127.0.0.1:8000', changeOrigin: true },
+      '/signals':     { target: 'http://127.0.0.1:8000', changeOrigin: true },
     },
   },
 })
