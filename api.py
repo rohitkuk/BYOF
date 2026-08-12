@@ -57,14 +57,13 @@ Path("frontend/public/screenshots").mkdir(parents=True, exist_ok=True)
 # In-memory refresh state — tracks running/last-completed job
 _refresh_state: dict = {"status": "idle", "last": None}
 
-# Feed cache — unfiltered /feed responses, 30s TTL
-_feed_cache: dict = {"data": None, "ts": 0.0}
+# Feed cache — unfiltered /feed responses, 30s TTL, keyed by persona
+_feed_cache: dict = {}  # persona_name -> {"data": list, "ts": float}
 _FEED_CACHE_TTL = 30
 
 
 def _invalidate_feed_cache():
-    _feed_cache["data"] = None
-    _feed_cache["ts"] = 0.0
+    _feed_cache.clear()
 
 
 app = FastAPI()
@@ -158,12 +157,15 @@ def get_feed(
 ):
     has_filters = any([category, date, type, source])
 
-    if not has_filters:
-        now_ts = _time.time()
-        if _feed_cache["data"] is not None and (now_ts - _feed_cache["ts"]) < _FEED_CACHE_TTL:
-            return _feed_cache["data"]
+    _prefs = json.load(open(PREFS_PATH)) if os.path.exists(PREFS_PATH) else {}
+    persona = _prefs.get("persona", "generalist")
 
-    items = rank(DB_PATH, PREFS_PATH, limit=None)
+    if not has_filters:
+        cached = _feed_cache.get(persona)
+        if cached and (_time.time() - cached["ts"]) < _FEED_CACHE_TTL:
+            return cached["data"]
+
+    items = rank(DB_PATH, PREFS_PATH, limit=None, persona=persona)
 
     if source:
         items = [i for i in items if i.get("source") == source]
@@ -190,8 +192,7 @@ def get_feed(
     shaped = [_shape_item(i) for i in items[:20]]
 
     if not has_filters:
-        _feed_cache["data"] = shaped
-        _feed_cache["ts"] = _time.time()
+        _feed_cache[persona] = {"data": shaped, "ts": _time.time()}
 
     return shaped
 
