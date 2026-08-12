@@ -57,6 +57,14 @@ def init_db(db_path: str) -> sqlite3.Connection:
             failure_count INTEGER
         )
     """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS signals (
+            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            url        TEXT NOT NULL,
+            action     TEXT NOT NULL,
+            created_at TEXT NOT NULL
+        )
+    """)
     for col, definition in [
         ("image_url", "TEXT"),
         ("image_type", "TEXT"),
@@ -99,6 +107,28 @@ def save_items(conn: sqlite3.Connection, items: list[dict]) -> int:
     )
     conn.commit()
     return cursor.rowcount
+
+
+def save_signal(conn: sqlite3.Connection, url: str, action: str) -> None:
+    conn.execute(
+        "INSERT INTO signals (url, action, created_at) VALUES (?, ?, ?)",
+        (url, action, datetime.now(timezone.utc).isoformat()),
+    )
+    conn.commit()
+
+
+def get_signals_with_items(conn: sqlite3.Connection) -> list[dict]:
+    rows = conn.execute("""
+        SELECT s.url, s.action, s.created_at, i.source, i.llm_keywords
+        FROM signals s
+        LEFT JOIN items i ON s.url = i.url
+        ORDER BY s.created_at DESC
+    """).fetchall()
+    return [
+        {"url": r[0], "action": r[1], "created_at": r[2],
+         "source": r[3], "llm_keywords": r[4]}
+        for r in rows
+    ]
 
 
 def update_image_urls(conn: sqlite3.Connection, updates: dict[str, str]) -> None:
