@@ -1,3 +1,7 @@
+import re as _re
+
+_TOKEN_SPLIT = _re.compile(r'[^\w-]+')
+
 SCORING_MODE = "reweight"
 
 _BOOST_PER_MATCH = 0.15
@@ -43,10 +47,11 @@ def _keyword_boost(item: dict, affinities: list[str]) -> float:
         return 1.0
     text = item.get("title", "").lower()
     kws = [k.lower() for k in (item.get("keywords") or [])]
-    count = sum(
-        1 for aff in affinities
-        if aff in text or any(aff in kw for kw in kws)
-    )
+    tokens: set[str] = set(_TOKEN_SPLIT.split(text))
+    for kw in kws:
+        tokens.update(_TOKEN_SPLIT.split(kw))
+    tokens.discard("")
+    count = sum(1 for aff in affinities if aff.lower() in tokens)
     return min(_BOOST_CAP, 1.0 + _BOOST_PER_MATCH * count)
 
 

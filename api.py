@@ -143,8 +143,16 @@ def get_preferences():
 
 @app.post("/preferences")
 def post_preferences(body: dict):
+    existing = {}
+    if os.path.exists(PREFS_PATH):
+        with open(PREFS_PATH) as f:
+            try:
+                existing = json.load(f)
+            except Exception:
+                existing = {}
+    merged = {**existing, **body}
     with open(PREFS_PATH, "w") as f:
-        json.dump(body, f, indent=2)
+        json.dump(merged, f, indent=2)
     return {"status": "ok"}
 
 
