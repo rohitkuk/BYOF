@@ -3,6 +3,7 @@ import sqlite3
 from datetime import datetime
 from email.utils import parsedate_to_datetime
 
+from agents.personas import apply_persona
 from agents.weighing import weigh
 
 
@@ -18,7 +19,7 @@ def _parse_ts(published_at: str, fetched_at: str) -> float:
         return 0.0
 
 
-def rank(db_path: str, prefs_path: str = "preferences.json", limit: int | None = None) -> list[dict]:
+def rank(db_path: str, prefs_path: str = "preferences.json", limit: int | None = None, persona: str | None = None) -> list[dict]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     rows = conn.execute(
@@ -48,6 +49,8 @@ def rank(db_path: str, prefs_path: str = "preferences.json", limit: int | None =
     items.sort(key=lambda x: x["_score"], reverse=True)
     for item in items:
         item["score"] = item.pop("_score")
+    if persona:
+        items = apply_persona(items, persona)
     if limit is not None:
         items = items[:limit]
     return items

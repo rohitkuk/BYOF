@@ -74,3 +74,39 @@ def test_rescore_mode_raises():
             apply_persona([_item()], "researcher")
     finally:
         p.SCORING_MODE = original
+
+
+def test_rank_applies_persona_when_provided(tmp_path):
+    import sqlite3, json
+    from agents.aggregation import rank
+
+    db = str(tmp_path / "test.db")
+    prefs = str(tmp_path / "prefs.json")
+    json.dump({}, open(prefs, "w"))
+
+    conn = sqlite3.connect(db)
+    conn.execute("""CREATE TABLE items (
+        id INTEGER PRIMARY KEY, title TEXT, url TEXT UNIQUE,
+        source TEXT, published_at TEXT, fetched_at TEXT,
+        raw TEXT, image_url TEXT, image_type TEXT,
+        llm_score REAL, llm_summary TEXT, llm_keywords TEXT,
+        llm_categories TEXT, scored_at TEXT, body TEXT,
+        article_url TEXT
+    )""")
+    ts = "2026-08-12T10:00:00+00:00"
+    conn.execute(
+        "INSERT INTO items (title,url,source,published_at,fetched_at,raw,llm_score) VALUES (?,?,?,?,?,?,?)",
+        ("ArXiv paper", "http://a.com", "ArXiv", ts, ts, "{}", 5.0),
+    )
+    conn.execute(
+        "INSERT INTO items (title,url,source,published_at,fetched_at,raw,llm_score) VALUES (?,?,?,?,?,?,?)",
+        ("TechCrunch post", "http://b.com", "TechCrunch", ts, ts, "{}", 5.0),
+    )
+    conn.commit()
+    conn.close()
+
+    researcher_items = rank(db, prefs, limit=None, persona="researcher")
+    assert researcher_items[0]["source"] == "ArXiv"
+
+    engineer_items = rank(db, prefs, limit=None, persona="engineer")
+    assert engineer_items[0]["source"] == "TechCrunch"
