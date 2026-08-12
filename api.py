@@ -31,7 +31,9 @@ from db.store import (
     save_items,
     save_llm_results,
     save_refresh_run,
+    save_signal,
 )
+from agents.learning import compute_learned_weights
 
 DB_PATH = "db/byof.db"
 PREFS_PATH = "preferences.json"
@@ -156,6 +158,19 @@ def post_preferences(body: dict):
     return {"status": "ok"}
 
 
+@app.post("/signals")
+def post_signal(body: dict):
+    url = body.get("url", "").strip()
+    action = body.get("action", "").strip()
+    if not url or action not in ("liked", "saved", "skipped"):
+        return {"status": "ignored"}
+    conn = init_db(DB_PATH)
+    save_signal(conn, url, action)
+    conn.close()
+    _invalidate_feed_cache()
+    return {"status": "ok"}
+
+
 @app.get("/feed")
 def get_feed(
     category: str | None = Query(default=None),
@@ -242,6 +257,11 @@ def _do_refresh():
             "failure_count": swarm.failure_count,
         }
         save_refresh_run(conn, run_record)
+        learned = compute_learned_weights(conn)
+        _prefs = json.load(open(PREFS_PATH)) if os.path.exists(PREFS_PATH) else {}
+        _prefs["learned"] = learned
+        with open(PREFS_PATH, "w") as f:
+            json.dump(_prefs, f, indent=2)
         conn.close()
         _invalidate_feed_cache()
         _refresh_state["last"] = {
