@@ -15,7 +15,7 @@
 </div>
 
 <div align="center">
-  <img src="docs/demo.gif" alt="BYOF demo — landing, feed scroll, like/save/skip, explore, saved, profile" width="280" />
+  <img src="docs/demo.gif" alt="BYOF demo — landing, feed scroll, like/save/skip, explore, saved, profile" width="200" />
 </div>
 
 ---
