@@ -114,12 +114,13 @@ def run_demo():
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False)
+        # Record at 2× DPR — sharper text/edges; ffmpeg downsamples to 390px
         ctx = browser.new_context(
             viewport=VIEWPORT,
-            device_scale_factor=1,
+            device_scale_factor=2,
             is_mobile=True,
             record_video_dir=str(VIDEO_DIR),
-            record_video_size=VIEWPORT,
+            record_video_size={"width": VIEWPORT["width"]*2, "height": VIEWPORT["height"]*2},
         )
         # Inject overlays into every page before any script runs
         ctx.add_init_script(INIT_SCRIPT)
@@ -192,8 +193,9 @@ def to_gif(webm: Path):
     cmd = [
         FFMPEG, "-y", "-i", str(webm),
         "-vf",
-        "fps=20,scale=390:-1:flags=lanczos,"
-        "split[s0][s1];[s0]palettegen=max_colors=192[p];[s1][p]paletteuse=dither=bayer",
+        "fps=18,scale=390:-1:flags=lanczos,"
+        "split[s0][s1];[s0]palettegen=max_colors=256:stats_mode=full[p];"
+        "[s1][p]paletteuse=dither=floyd_steinberg",
         "-loop", "0",
         str(OUTPUT_GIF),
     ]
