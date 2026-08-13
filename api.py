@@ -31,7 +31,9 @@ from db.store import (
     save_items,
     save_llm_results,
     save_refresh_run,
+    save_signal,
 )
+from agents.learning import compute_learned_weights
 
 DB_PATH = "db/byof.db"
 PREFS_PATH = "preferences.json"
@@ -57,14 +59,13 @@ Path("frontend/public/screenshots").mkdir(parents=True, exist_ok=True)
 # In-memory refresh state — tracks running/last-completed job
 _refresh_state: dict = {"status": "idle", "last": None}
 
-# Feed cache — unfiltered /feed responses, 30s TTL
-_feed_cache: dict = {"data": None, "ts": 0.0}
+# Feed cache — unfiltered /feed responses, 30s TTL, keyed by persona
+_feed_cache: dict = {}  # persona_name -> {"data": list, "ts": float}
 _FEED_CACHE_TTL = 30
 
 
 def _invalidate_feed_cache():
-    _feed_cache["data"] = None
-    _feed_cache["ts"] = 0.0
+    _feed_cache.clear()
 
 
 app = FastAPI()
@@ -144,8 +145,29 @@ def get_preferences():
 
 @app.post("/preferences")
 def post_preferences(body: dict):
+    existing = {}
+    if os.path.exists(PREFS_PATH):
+        with open(PREFS_PATH) as f:
+            try:
+                existing = json.load(f)
+            except Exception:
+                existing = {}
+    merged = {**existing, **body}
     with open(PREFS_PATH, "w") as f:
-        json.dump(body, f, indent=2)
+        json.dump(merged, f, indent=2)
+    return {"status": "ok"}
+
+
+@app.post("/signals")
+def post_signal(body: dict):
+    url = body.get("url", "").strip()
+    action = body.get("action", "").strip()
+    if not url or action not in ("liked", "saved", "skipped"):
+        return {"status": "ignored"}
+    conn = init_db(DB_PATH)
+    save_signal(conn, url, action)
+    conn.close()
+    _invalidate_feed_cache()
     return {"status": "ok"}
 
 
@@ -158,12 +180,15 @@ def get_feed(
 ):
     has_filters = any([category, date, type, source])
 
-    if not has_filters:
-        now_ts = _time.time()
-        if _feed_cache["data"] is not None and (now_ts - _feed_cache["ts"]) < _FEED_CACHE_TTL:
-            return _feed_cache["data"]
+    _prefs = json.load(open(PREFS_PATH)) if os.path.exists(PREFS_PATH) else {}
+    persona = _prefs.get("persona", "generalist")
 
-    items = rank(DB_PATH, PREFS_PATH, limit=None)
+    if not has_filters:
+        cached = _feed_cache.get(persona)
+        if cached and (_time.time() - cached["ts"]) < _FEED_CACHE_TTL:
+            return cached["data"]
+
+    items = rank(DB_PATH, PREFS_PATH, limit=None, persona=persona)
 
     if source:
         items = [i for i in items if i.get("source") == source]
@@ -190,8 +215,7 @@ def get_feed(
     shaped = [_shape_item(i) for i in items[:20]]
 
     if not has_filters:
-        _feed_cache["data"] = shaped
-        _feed_cache["ts"] = _time.time()
+        _feed_cache[persona] = {"data": shaped, "ts": _time.time()}
 
     return shaped
 
@@ -233,6 +257,11 @@ def _do_refresh():
             "failure_count": swarm.failure_count,
         }
         save_refresh_run(conn, run_record)
+        learned = compute_learned_weights(conn)
+        _prefs = json.load(open(PREFS_PATH)) if os.path.exists(PREFS_PATH) else {}
+        _prefs["learned"] = learned
+        with open(PREFS_PATH, "w") as f:
+            json.dump(_prefs, f, indent=2)
         conn.close()
         _invalidate_feed_cache()
         _refresh_state["last"] = {

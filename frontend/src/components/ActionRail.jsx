@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import axios from 'axios'
 
 const ACTIONS = [
   { type: 'like', label: 'Like',  icon: 'favorite',  activeColor: 'var(--like-active)' },
@@ -12,9 +13,24 @@ export function ActionRail({ item, onSignal }) {
   const [skipped, setSkipped] = useState(false)
 
   const handle = (type) => {
-    if (type === 'like')  { const n = !liked;   setLiked(n);   onSignal?.({ liked: n, saved, skipped }) }
-    if (type === 'save')  { const n = !saved;   setSaved(n);   onSignal?.({ liked, saved: n, skipped }) }
-    if (type === 'skip')  { const n = !skipped; setSkipped(n); onSignal?.({ liked, saved, skipped: n }) }
+    if (type === 'like') {
+      const n = !liked
+      setLiked(n)
+      onSignal?.({ liked: n, saved, skipped })
+      if (n) axios.post('/signals', { url: item.url, action: 'liked' }).catch(() => {})
+    }
+    if (type === 'save') {
+      const n = !saved
+      setSaved(n)
+      onSignal?.({ liked, saved: n, skipped })
+      if (n) axios.post('/signals', { url: item.url, action: 'saved' }).catch(() => {})
+    }
+    if (type === 'skip') {
+      const n = !skipped
+      setSkipped(n)
+      onSignal?.({ liked, saved, skipped: n })
+      if (n) axios.post('/signals', { url: item.url, action: 'skipped' }).catch(() => {})
+    }
   }
 
   const state = { like: liked, save: saved, skip: skipped }

@@ -1,9 +1,12 @@
 import json
+import os
 import sqlite3
 from datetime import datetime
 from email.utils import parsedate_to_datetime
 
+from agents.personas import apply_persona
 from agents.weighing import weigh
+from agents.learning import apply_learned_weights
 
 
 def _parse_ts(published_at: str, fetched_at: str) -> float:
@@ -18,7 +21,7 @@ def _parse_ts(published_at: str, fetched_at: str) -> float:
         return 0.0
 
 
-def rank(db_path: str, prefs_path: str = "preferences.json", limit: int | None = None) -> list[dict]:
+def rank(db_path: str, prefs_path: str = "preferences.json", limit: int | None = None, persona: str | None = None) -> list[dict]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     rows = conn.execute(
@@ -48,6 +51,18 @@ def rank(db_path: str, prefs_path: str = "preferences.json", limit: int | None =
     items.sort(key=lambda x: x["_score"], reverse=True)
     for item in items:
         item["score"] = item.pop("_score")
+    if persona:
+        items = apply_persona(items, persona)
+    _prefs: dict = {}
+    if os.path.exists(prefs_path):
+        try:
+            with open(prefs_path) as _f:
+                _prefs = json.load(_f)
+        except Exception:
+            pass
+    learned = _prefs.get("learned", {})
+    if learned:
+        items = apply_learned_weights(items, learned)
     if limit is not None:
         items = items[:limit]
     return items
