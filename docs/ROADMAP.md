@@ -46,13 +46,18 @@ Per-item content fetch + LLM scoring. Each item gets its own short-lived Claude 
   7. ✅ `api.py` — /refresh wired to swarm, /runs endpoint added, /feed includes summary + llm_scored
   8. ✅ `app.py` — swarm wired into CLI with cost summary print
 
-### V3 — Persona twins
+### V3 — Persona twins + Preference learning ✅ Complete
 Feed reflects multiple facets of taste (researcher / generalist / hands-on engineer
-lenses), toggleable.
-- Agents: V2 item-agents + 3–5 persona agents scoring the same pool independently
-- Skill: running many agents over identical input with independent judgments
-- Planned: mind map — cross-article relationship graph, topic clustering from llm_keywords
-- Planned: over-time preference learning — persist like/save/skip signals to backend, drift scoring weights
+lenses), toggleable. Signals from usage drift the ranking weights over time.
+- Agents: V2 item-agents + persona reweighting agent + preference learning agent
+- Skill: running many agents over identical input; exponential-decay signal accumulation
+- ✅ `agents/personas.py` — researcher / generalist / engineer source + keyword reweighting
+- ✅ `agents/learning.py` — compute_learned_weights (7-day half-life decay) + apply_learned_weights
+- ✅ `db/store.py` — signals table; save_signal(); get_signals_with_items()
+- ✅ `api.py` — POST /signals; learned weights recomputed on each refresh cycle
+- ✅ `agents/aggregation.py` — persona + learned weights applied after LLM scoring
+- ✅ `ActionRail.jsx` — fires POST /signals on like / save / skip
+- Planned next: mind map — cross-article relationship graph, topic clustering from llm_keywords
 
 ### V4 — Consensus jury
 Top rankings come with a visible "why this beat that" — agents disagree, a judge resolves.
@@ -67,4 +72,4 @@ automatically, within a budget.
 
 ## Status
 
-Current: **V2 complete** — item-level swarm with LLM scoring live. Next: V3 planning.
+Current: **V3 complete** — persona twins + preference learning live. Next: V4 planning (consensus jury).

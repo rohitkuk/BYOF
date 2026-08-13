@@ -43,6 +43,20 @@ Two-phase, runs after `save_items()`:
 Scores items against user preferences (categories + subcategories). V1: static preference
 set once via UI, stored in `preferences.json`. Returns items with `_weight` field.
 
+**Persona agent** (`agents/personas.py`)
+V3. Three taste lenses — researcher / generalist / engineer. Applies source-weight
+multipliers and keyword-affinity boosts to the scored item pool without re-fetching.
+`SCORING_MODE = "reweight"` (configurable; "rescore" path reserved for future LLM re-ranking).
+Token-based keyword matching prevents substring false positives.
+
+**Learning agent** (`agents/learning.py`)
+V3. Reads `signals` table (like/save/skip actions) joined with item metadata.
+Computes exponential-decay boosts per source and per keyword (7-day half-life, clamped
+to [0.4, 2.5]). Skipped URLs collected for permanent feed filtering.
+`compute_learned_weights(conn)` runs inside `_do_refresh()` and writes results to
+`preferences.json["learned"]`. `apply_learned_weights(items, learned)` applies boosts
+and re-sorts in `rank()`.
+
 **Aggregation agent** (`agents/aggregation.py`)
 Takes weighed items, computes `_score = recency_timestamp × weight`, sorts descending.
 Accepts optional `limit` parameter — V1 caps feed at 20 items (anti-doom-scroll).
@@ -79,18 +93,26 @@ not in Streamlit.
 ## Data flow
 
 ```
-Open app
-  → Preference setup (first run)
+Open app → Landing page (localStorage auth gate)
+  → Preference setup (first run) → preferences.json
 
-┌─────────── privacy boundary — local only from here ───────────┐
-│  Connector agents (Google News, TechCrunch, etc.)              │
-│    → save_items() → SQLite                                     │
-│    → refresh_article_images() (slug phase → Playwright phase)  │
-│    → refresh_publisher_logos()                                 │
-│    → Weighing agent (score by category/subcategory prefs)      │
-│    → Aggregation agent (rank, cap at 20)                       │
-│    → FastAPI api.py (:8000) → React frontend (:5173)          │
-└───────────────────────────────────────────────────────────────┘
+┌──────────────────── privacy boundary — local only ─────────────────────┐
+│  Connectors  Google News · TechCrunch · ArXiv · MIT TR · TLDR Tech     │
+│    → save_items() → SQLite                                              │
+│    → refresh_article_images() (slug phase → Playwright phase)          │
+│    → refresh_publisher_logos()                                          │
+│                                                                         │
+│  LLM Swarm   Claude Haiku per-item (summary + keywords + score)        │
+│                                                                         │
+│  Ranking pipeline                                                       │
+│    → Weighing agent:   category/subcategory preferences                 │
+│    → Persona agent:    researcher / generalist / engineer reweighting   │
+│    → Learning agent:   like/save/skip decay boosts (7-day half-life)   │
+│    → Aggregation:      ranked feed, top 20                              │
+│                                                                         │
+│  FastAPI api.py :8000  ←→  React Vite frontend :5173                   │
+│  Feed (For You) · Explore · Saved · Profile                             │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
 ## Design principles
