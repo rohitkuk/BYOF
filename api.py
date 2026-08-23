@@ -18,7 +18,9 @@ from fastapi.staticfiles import StaticFiles
 from agents.aggregation import rank
 from agents.swarm import run_swarm
 from connectors.arxiv import fetch as fetch_arxiv
+from connectors.github import fetch as fetch_github
 from connectors.google_news import fetch as fetch_google_news
+from connectors.linkedin import fetch as fetch_linkedin
 from connectors.mit_tech_review import fetch as fetch_mit
 from connectors.techcrunch import fetch as fetch_techcrunch
 from connectors.tldr_tech import fetch as fetch_tldr
@@ -44,6 +46,8 @@ _SOURCE_CATEGORY = {
     "MIT Technology Review": ["Technology", "Science"],
     "TLDR Tech": ["Technology"],
     "ArXiv": ["Science"],
+    "LinkedIn": ["Technology", "Business"],
+    "GitHub Trending": ["Technology"],
 }
 
 _SOURCE_TYPE = {
@@ -52,6 +56,8 @@ _SOURCE_TYPE = {
     "MIT Technology Review": "Article",
     "TLDR Tech": "Newsletter",
     "ArXiv": "Paper",
+    "LinkedIn": "Post",
+    "GitHub Trending": "Repository",
 }
 
 Path("frontend/public/screenshots").mkdir(parents=True, exist_ok=True)
@@ -234,6 +240,8 @@ def _do_refresh():
             + fetch_arxiv()[:_SOURCE_LIMIT]
             + fetch_mit()[:_SOURCE_LIMIT]
             + fetch_tldr()[:_SOURCE_LIMIT]
+            + fetch_linkedin()[:_SOURCE_LIMIT]
+            + fetch_github()[:25]
         )
         new_count = save_items(conn, all_items)
         refresh_article_images(conn, use_playwright=False)

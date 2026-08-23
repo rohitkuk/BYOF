@@ -224,3 +224,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# BYOF browser sessions — personal cookies, never commit
+sessions/
