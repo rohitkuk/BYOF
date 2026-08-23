@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
-const CONTENT_TYPES = ['Articles', 'Newsletters', 'Papers']
-const TYPE_MAP = { Articles: 'Article', Newsletters: 'Newsletter', Papers: 'Paper' }
+const CONTENT_TYPES = ['Articles', 'Newsletters', 'Papers', 'Posts', 'Repositories']
+const TYPE_MAP = { Articles: 'Article', Newsletters: 'Newsletter', Papers: 'Paper', Posts: 'Post', Repositories: 'Repository' }
 
 const TOPICS = [
   { label: 'Artificial Intelligence', category: 'Technology' },
@@ -68,6 +68,8 @@ export function ExplorePage({ items, filters, onApply }) {
     'MIT Technology Review': '#ef4444',
     'TLDR Tech':        '#06b6d4',
     'ArXiv':            '#f97316',
+    'LinkedIn':         '#0077b5',
+    'GitHub Trending':  '#24292f',
   }
 
   return (
